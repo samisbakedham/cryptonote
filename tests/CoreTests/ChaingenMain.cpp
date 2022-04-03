@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     GENERATE_AND_PLAY(gen_chain_switch_1);
     GENERATE_AND_PLAY(gen_ring_signature_1);
     GENERATE_AND_PLAY(gen_ring_signature_2);
-    //GENERATE_AND_PLAY(gen_ring_signature_big); // Takes up to XXX hours (if CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW == 10)
+    //GENERATE_AND_PLAY(gen_ring_signature_big); // Takes up to XXX hours (if Fortress_MINED_MONEY_UNLOCK_WINDOW == 10)
 
     //// Block verification tests
     GENERATE_AND_PLAY(TestBlockMajorVersionAccepted);
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     GENERATE_AND_PLAY(gen_block_has_invalid_tx);
     GENERATE_AND_PLAY(gen_block_is_too_big);
     GENERATE_AND_PLAY(TestBlockCumulativeSizeExceedsLimit);
-    //GENERATE_AND_PLAY_EX_2VER(gen_block_invalid_binary_format); // Takes up to 30 minutes, if CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW == 10
+    //GENERATE_AND_PLAY_EX_2VER(gen_block_invalid_binary_format); // Takes up to 30 minutes, if Fortress_MINED_MONEY_UNLOCK_WINDOW == 10
 
     // Transaction verification tests
     GENERATE_AND_PLAY(gen_tx_big_version);

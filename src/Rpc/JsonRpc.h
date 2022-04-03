@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include "Serialization/ISerializer.h"
 #include "Serialization/SerializationTools.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 class HttpClient;
   
@@ -192,7 +192,7 @@ bool invokeMethod(const JsonRpcRequest& jsReq, JsonRpcResponse& jsRes, Handler h
   Request req;
   Response res;
 
-  if (!std::is_same<Request, CryptoNote::EMPTY_STRUCT>::value && !jsReq.loadParams(req)) {
+  if (!std::is_same<Request, Fortress::EMPTY_STRUCT>::value && !jsReq.loadParams(req)) {
     throw JsonRpcError(JsonRpc::errInvalidParams);
   }
 

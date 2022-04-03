@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,12 +11,12 @@
 #include "System/Dispatcher.h"
 #include "System/Event.h"
 
-#include "CryptoNoteCore/MessageQueue.h"
-#include "CryptoNoteCore/BlockchainMessages.h"
-#include "CryptoNoteCore/IntrusiveLinkedList.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/MessageQueue.h"
+#include "FortressCore/BlockchainMessages.h"
+#include "FortressCore/IntrusiveLinkedList.h"
+#include "FortressCore/FortressTools.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 class MessageQueueTest : public testing::Test {
 public:

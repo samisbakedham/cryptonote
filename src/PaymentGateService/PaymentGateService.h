@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,7 +24,7 @@ public:
 
   const PaymentService::ConfigurationManager& getConfig() const { return config; }
   PaymentService::WalletConfiguration getWalletConfig() const;
-  const CryptoNote::Currency getCurrency();
+  const Fortress::Currency getCurrency();
 
   void run();
   void stop();
@@ -36,13 +36,13 @@ private:
   void runInProcess(Logging::LoggerRef& log);
   void runRpcProxy(Logging::LoggerRef& log);
 
-  void runWalletService(const CryptoNote::Currency& currency, CryptoNote::INode& node);
+  void runWalletService(const Fortress::Currency& currency, Fortress::INode& node);
 
   System::Dispatcher* dispatcher;
   System::Event* stopEvent;
   PaymentService::ConfigurationManager config;
   PaymentService::WalletService* service;
-  CryptoNote::CurrencyBuilder currencyBuilder;
+  Fortress::CurrencyBuilder currencyBuilder;
   
   Logging::LoggerGroup logger;
   std::ofstream fileStream;

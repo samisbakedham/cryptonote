@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #include <Logging/LoggerRef.h>
 #include <Logging/LoggerManager.h>
 
-namespace CryptoNote {
+namespace Fortress {
 class core;
 class NodeServer;
 }
@@ -17,7 +17,7 @@ class NodeServer;
 class DaemonCommandsHandler
 {
 public:
-  DaemonCommandsHandler(CryptoNote::core& core, CryptoNote::NodeServer& srv, Logging::LoggerManager& log);
+  DaemonCommandsHandler(Fortress::core& core, Fortress::NodeServer& srv, Logging::LoggerManager& log);
 
   bool start_handling() {
     m_consoleHandler.start();
@@ -31,8 +31,8 @@ public:
 private:
 
   Common::ConsoleHandler m_consoleHandler;
-  CryptoNote::core& m_core;
-  CryptoNote::NodeServer& m_srv;
+  Fortress::core& m_core;
+  Fortress::NodeServer& m_srv;
   Logging::LoggerRef logger;
   Logging::LoggerManager& m_logManager;
 

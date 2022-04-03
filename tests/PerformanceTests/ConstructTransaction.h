@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressBasic.h"
+#include "FortressCore/FortressFormatUtils.h"
 
 #include "MultiTransactionTestBase.h"
 
@@ -25,7 +25,7 @@ public:
 
   bool init()
   {
-    using namespace CryptoNote;
+    using namespace Fortress;
 
     if (!base_class::init())
       return false;
@@ -42,11 +42,11 @@ public:
 
   bool test()
   {
-    return CryptoNote::constructTransaction(this->m_miners[this->real_source_idx].getAccountKeys(), this->m_sources, m_destinations, std::vector<uint8_t>(), m_tx, 0, this->m_logger);
+    return Fortress::constructTransaction(this->m_miners[this->real_source_idx].getAccountKeys(), this->m_sources, m_destinations, std::vector<uint8_t>(), m_tx, 0, this->m_logger);
   }
 
 private:
-  CryptoNote::AccountBase m_alice;
-  std::vector<CryptoNote::TransactionDestinationEntry> m_destinations;
-  CryptoNote::Transaction m_tx;
+  Fortress::AccountBase m_alice;
+  std::vector<Fortress::TransactionDestinationEntry> m_destinations;
+  Fortress::Transaction m_tx;
 };

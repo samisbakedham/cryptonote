@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,14 +10,14 @@
 #include <vector>
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteProtocol/CryptoNoteProtocolDefinitions.h"
+#include "FortressCore/FortressBasic.h"
+#include "FortressProtocol/FortressProtocolDefinitions.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 
 #include "BlockchainExplorerData.h"
 #include "ITransaction.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 class INodeObserver {
 public:
@@ -47,7 +47,7 @@ struct TransactionShortInfo {
 struct BlockShortEntry {
   Crypto::Hash blockHash;
   bool hasBlock;
-  CryptoNote::Block block;
+  Fortress::Block block;
   std::vector<TransactionShortInfo> txsShortInfo;
 };
 
@@ -70,8 +70,8 @@ public:
   virtual uint64_t getLastLocalBlockTimestamp() const = 0;
 
   virtual void relayTransaction(const Transaction& transaction, const Callback& callback) = 0;
-  virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) = 0;
-  virtual void getNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<CryptoNote::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) = 0;
+  virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) = 0;
+  virtual void getNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<Fortress::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) = 0;
   virtual void getTransactionOutsGlobalIndices(const Crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) = 0;
   virtual void queryBlocks(std::vector<Crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks, uint32_t& startHeight, const Callback& callback) = 0;
   virtual void getPoolSymmetricDifference(std::vector<Crypto::Hash>&& knownPoolTxIds, Crypto::Hash knownBlockId, bool& isBcActual, std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<Crypto::Hash>& deletedTxIds, const Callback& callback) = 0;

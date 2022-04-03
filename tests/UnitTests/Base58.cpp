@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,15 +7,15 @@
 #include <cstdint>
 #include <Logging/LoggerGroup.h>
 
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/CryptoNoteSerialization.h"
+#include "FortressCore/FortressBasicImpl.h"
+#include "FortressCore/Currency.h"
+#include "FortressCore/FortressSerialization.h"
 
 #include "Serialization/BinarySerializationTools.h"
 #include "Common/Base58.cpp"
 
 using namespace Tools;
-using namespace CryptoNote;
+using namespace Fortress;
 
 #define MAKE_STR(arr) std::string(arr, sizeof(arr) - 1)
 
@@ -451,22 +451,22 @@ namespace
 
 TEST(getAccountAddressAsStr, works_correctly)
 {
-  CryptoNote::AccountPublicAddress addr;
+  Fortress::AccountPublicAddress addr;
 
-  ASSERT_NO_THROW(CryptoNote::loadFromBinary(addr, Common::asBinaryArray(test_serialized_keys)));
-  std::string addr_str = CryptoNote::getAccountAddressAsStr(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, addr);
+  ASSERT_NO_THROW(Fortress::loadFromBinary(addr, Common::asBinaryArray(test_serialized_keys)));
+  std::string addr_str = Fortress::getAccountAddressAsStr(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, addr);
   ASSERT_EQ(addr_str, test_keys_addr_str);
 }
 
 TEST(parseAccountAddressString, handles_valid_address)
 {
   uint64_t prefix;
-  CryptoNote::AccountPublicAddress addr;
-  ASSERT_TRUE(CryptoNote::parseAccountAddressString(prefix, addr, test_keys_addr_str));
+  Fortress::AccountPublicAddress addr;
+  ASSERT_TRUE(Fortress::parseAccountAddressString(prefix, addr, test_keys_addr_str));
   ASSERT_EQ(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, prefix);
 
   BinaryArray blob;
-  ASSERT_NO_THROW(blob = CryptoNote::storeToBinary(addr));
+  ASSERT_NO_THROW(blob = Fortress::storeToBinary(addr));
   ASSERT_EQ(Common::asString(blob), test_serialized_keys);
 }
 
@@ -476,8 +476,8 @@ TEST(parseAccountAddressString, fails_on_invalid_address_format)
   addr_str[0] = '0';
 
   uint64_t prefix;
-  CryptoNote::AccountPublicAddress addr;
-  ASSERT_FALSE(CryptoNote::parseAccountAddressString(prefix, addr, addr_str));
+  Fortress::AccountPublicAddress addr;
+  ASSERT_FALSE(Fortress::parseAccountAddressString(prefix, addr, addr_str));
 }
 
 TEST(parseAccountAddressString, fails_on_invalid_address_prefix)
@@ -485,9 +485,9 @@ TEST(parseAccountAddressString, fails_on_invalid_address_prefix)
   std::string addr_str = Base58::encode_addr(0, test_serialized_keys);
 
   Logging::LoggerGroup logger;
-  CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logger).currency();
+  Fortress::Currency currency = Fortress::CurrencyBuilder(logger).currency();
 
-  CryptoNote::AccountPublicAddress addr;
+  Fortress::AccountPublicAddress addr;
   
   ASSERT_FALSE(currency.parseAccountAddressString(addr_str, addr));
 }
@@ -497,8 +497,8 @@ TEST(parseAccountAddressString, fails_on_invalid_address_content)
   std::string addr_str = Base58::encode_addr(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, test_serialized_keys.substr(1));
 
   uint64_t prefix;
-  CryptoNote::AccountPublicAddress addr;
-  ASSERT_FALSE(CryptoNote::parseAccountAddressString(prefix, addr, addr_str));
+  Fortress::AccountPublicAddress addr;
+  ASSERT_FALSE(Fortress::parseAccountAddressString(prefix, addr, addr_str));
 }
 
 TEST(parseAccountAddressString, fails_on_invalid_address_spend_key)
@@ -508,8 +508,8 @@ TEST(parseAccountAddressString, fails_on_invalid_address_spend_key)
   std::string addr_str = Base58::encode_addr(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, serialized_keys_copy);
 
   uint64_t prefix;
-  CryptoNote::AccountPublicAddress addr;
-  ASSERT_FALSE(CryptoNote::parseAccountAddressString(prefix, addr, addr_str));
+  Fortress::AccountPublicAddress addr;
+  ASSERT_FALSE(Fortress::parseAccountAddressString(prefix, addr, addr_str));
 }
 
 TEST(parseAccountAddressString, fails_on_invalid_address_view_key)
@@ -519,6 +519,6 @@ TEST(parseAccountAddressString, fails_on_invalid_address_view_key)
   std::string addr_str = Base58::encode_addr(TEST_PUBLIC_ADDRESS_BASE58_PREFIX, serialized_keys_copy);
 
   uint64_t prefix;
-  CryptoNote::AccountPublicAddress addr;
-  ASSERT_FALSE(CryptoNote::parseAccountAddressString(prefix, addr, addr_str));
+  Fortress::AccountPublicAddress addr;
+  ASSERT_FALSE(Fortress::parseAccountAddressString(prefix, addr, addr_str));
 }

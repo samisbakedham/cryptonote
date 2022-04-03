@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,15 +6,15 @@
 
 #include <cstdint>
 
-#include "CryptoNoteProtocol/ICryptoNoteProtocolObserver.h"
-#include "CryptoNoteProtocol/ICryptoNoteProtocolQuery.h"
+#include "FortressProtocol/IFortressProtocolObserver.h"
+#include "FortressProtocol/IFortressProtocolQuery.h"
 
-class ICryptoNoteProtocolQueryStub: public CryptoNote::ICryptoNoteProtocolQuery {
+class IFortressProtocolQueryStub: public Fortress::IFortressProtocolQuery {
 public:
-  ICryptoNoteProtocolQueryStub() : peers(0), observedHeight(0), synchronized(false) {}
+  IFortressProtocolQueryStub() : peers(0), observedHeight(0), synchronized(false) {}
 
-  virtual bool addObserver(CryptoNote::ICryptoNoteProtocolObserver* observer) override;
-  virtual bool removeObserver(CryptoNote::ICryptoNoteProtocolObserver* observer) override;
+  virtual bool addObserver(Fortress::IFortressProtocolObserver* observer) override;
+  virtual bool removeObserver(Fortress::IFortressProtocolObserver* observer) override;
   virtual uint32_t getObservedHeight() const override;
   virtual size_t getPeerCount() const override;
   virtual bool isSynchronized() const override;

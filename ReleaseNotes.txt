@@ -1,11 +1,11 @@
 Release notes 1.1.1
 
-- New API for CryptoNote RPC Wallet
+- New API for Fortress RPC Wallet
 
 Release notes 1.1.0
 
-- CryptoNote RPC Wallet
-- Aggregate multi-addresses for CryptoNote RPC Wallet
+- Fortress RPC Wallet
+- Aggregate multi-addresses for Fortress RPC Wallet
 - Fusion transactions
 - Transactions pool synchronization
 - Wallet synchronization speed increase
@@ -35,7 +35,7 @@ Release notes 1.0.2
 
 - Further optimization in daemon RAM consumption
 - Various network health updates
-- Config and CryptoNote forking how-to update
+- Config and Fortress forking how-to update
 
 Release notes 1.0.1
 

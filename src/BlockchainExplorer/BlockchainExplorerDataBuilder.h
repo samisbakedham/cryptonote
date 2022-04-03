@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,16 +7,16 @@
 #include <vector>
 #include <array>
 
-#include "CryptoNoteProtocol/ICryptoNoteProtocolQuery.h"
-#include "CryptoNoteCore/ICore.h"
+#include "FortressProtocol/IFortressProtocolQuery.h"
+#include "FortressCore/ICore.h"
 #include "BlockchainExplorerData.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 class BlockchainExplorerDataBuilder
 {
 public:
-  BlockchainExplorerDataBuilder(CryptoNote::ICore& core, CryptoNote::ICryptoNoteProtocolQuery& protocol);
+  BlockchainExplorerDataBuilder(Fortress::ICore& core, Fortress::IFortressProtocolQuery& protocol);
 
   BlockchainExplorerDataBuilder(const BlockchainExplorerDataBuilder&) = delete;
   BlockchainExplorerDataBuilder(BlockchainExplorerDataBuilder&&) = delete;
@@ -34,7 +34,7 @@ private:
   bool fillTxExtra(const std::vector<uint8_t>& rawExtra, TransactionExtraDetails& extraDetails);
   size_t median(std::vector<size_t>& v);
 
-  CryptoNote::ICore& core;
-  CryptoNote::ICryptoNoteProtocolQuery& protocol;
+  Fortress::ICore& core;
+  Fortress::IFortressProtocolQuery& protocol;
 };
 }

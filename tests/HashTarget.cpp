@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,10 +7,10 @@
 #include <cstring>
 #include <limits>
 #include "crypto/hash.h"
-#include "CryptoNoteCore/Difficulty.h"
+#include "FortressCore/Difficulty.h"
 
 using namespace std;
-using CryptoNote::check_hash;
+using Fortress::check_hash;
 
 int main(int argc, char *argv[]) {
   Crypto::Hash h;

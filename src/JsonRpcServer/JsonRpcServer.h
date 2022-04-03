@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include "Rpc/HttpServer.h"
 
 
-namespace CryptoNote {
+namespace Fortress {
 class HttpResponse;
 class HttpRequest;
 }
@@ -26,7 +26,7 @@ namespace System {
 class TcpConnection;
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 class JsonRpcServer : HttpServer {
 public:
@@ -47,11 +47,11 @@ protected:
 
 private:
   // HttpServer
-  virtual void processRequest(const CryptoNote::HttpRequest& request, CryptoNote::HttpResponse& response) override;
+  virtual void processRequest(const Fortress::HttpRequest& request, Fortress::HttpResponse& response) override;
 
   System::Dispatcher& system;
   System::Event& stopEvent;
   Logging::LoggerRef logger;
 };
 
-} //namespace CryptoNote
+} //namespace Fortress

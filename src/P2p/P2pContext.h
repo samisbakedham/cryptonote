@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,13 +13,13 @@
 #include <System/TcpConnection.h>
 #include <System/Timer.h>
 
-#include "CryptoNoteConfig.h"
+#include "FortressConfig.h"
 #include "LevinProtocol.h"
 #include "P2pInterfaces.h"
 #include "P2pProtocolDefinitions.h"
 #include "P2pProtocolTypes.h"
 
-namespace CryptoNote {
+namespace Fortress {
   
 class P2pContext {
 public:

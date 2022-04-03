@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,14 +15,14 @@
 
 #include <unordered_set>
 
-namespace CryptoNote {
+namespace Fortress {
 
 class INode;
 
 class TransfersConsumer: public IObservableImpl<IBlockchainConsumerObserver, IBlockchainConsumer> {
 public:
 
-  TransfersConsumer(const CryptoNote::Currency& currency, INode& node, const Crypto::SecretKey& viewSecret);
+  TransfersConsumer(const Fortress::Currency& currency, INode& node, const Crypto::SecretKey& viewSecret);
 
   ITransfersSubscription& addSubscription(const AccountSubscription& subscription);
   // returns true if no subscribers left
@@ -74,7 +74,7 @@ private:
   std::unordered_set<Crypto::Hash> m_poolTxs;
 
   INode& m_node;
-  const CryptoNote::Currency& m_currency;
+  const Fortress::Currency& m_currency;
 };
 
 }

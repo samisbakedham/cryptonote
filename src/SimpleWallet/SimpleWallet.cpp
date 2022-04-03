@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,8 +23,8 @@
 #include "Common/StringTools.h"
 #include "Common/PathTools.h"
 #include "Common/Util.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressProtocol/FortressProtocolHandler.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 #include "Rpc/HttpClient.h"
@@ -42,7 +42,7 @@
 #include <crtdbg.h>
 #endif
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Logging;
 using Common::JsonValue;
 
@@ -130,13 +130,13 @@ private:
 };
 
 struct TransferCommand {
-  const CryptoNote::Currency& m_currency;
+  const Fortress::Currency& m_currency;
   size_t fake_outs_count;
-  std::vector<CryptoNote::WalletLegacyTransfer> dsts;
+  std::vector<Fortress::WalletLegacyTransfer> dsts;
   std::vector<uint8_t> extra;
   uint64_t fee;
 
-  TransferCommand(const CryptoNote::Currency& currency) :
+  TransferCommand(const Fortress::Currency& currency) :
     m_currency(currency), fake_outs_count(0), fee(currency.minimumFee()) {
   }
 
@@ -180,11 +180,11 @@ struct TransferCommand {
           }
         } else {
           WalletLegacyTransfer destination;
-          CryptoNote::TransactionDestinationEntry de;
+          Fortress::TransactionDestinationEntry de;
 
           if (!m_currency.parseAccountAddressString(arg, de.addr)) {
             Crypto::Hash paymentId;
-            if (CryptoNote::parsePaymentId(arg, paymentId)) {
+            if (Fortress::parsePaymentId(arg, paymentId)) {
               logger(ERROR, BRIGHT_RED) << "Invalid payment ID usage. Please, use -p <payment_id>. See help for details.";
             } else {
               logger(ERROR, BRIGHT_RED) << "Wrong address: " << arg;
@@ -281,7 +281,7 @@ std::string tryToOpenWalletOrLoadKeysOrThrow(LoggerRef& logger, std::unique_ptr<
     if (initError) { //bad password, or legacy format
       if (keysExists) {
         std::stringstream ss;
-        CryptoNote::importLegacyKeys(keys_file, password, ss);
+        Fortress::importLegacyKeys(keys_file, password, ss);
         boost::filesystem::rename(keys_file, keys_file + ".back");
         boost::filesystem::rename(walletFileName, walletFileName + ".back");
 
@@ -293,7 +293,7 @@ std::string tryToOpenWalletOrLoadKeysOrThrow(LoggerRef& logger, std::unique_ptr<
         logger(INFO) << "Storing wallet...";
 
         try {
-          CryptoNote::WalletHelper::storeWallet(*wallet, walletFileName);
+          Fortress::WalletHelper::storeWallet(*wallet, walletFileName);
         } catch (std::exception& e) {
           logger(ERROR, BRIGHT_RED) << "Failed to store wallet: " << e.what();
           throw std::runtime_error("error saving wallet file '" + walletFileName + "'");
@@ -309,7 +309,7 @@ std::string tryToOpenWalletOrLoadKeysOrThrow(LoggerRef& logger, std::unique_ptr<
     }
   } else if (keysExists) { //wallet not exists but keys presented
     std::stringstream ss;
-    CryptoNote::importLegacyKeys(keys_file, password, ss);
+    Fortress::importLegacyKeys(keys_file, password, ss);
     boost::filesystem::rename(keys_file, keys_file + ".back");
 
     WalletHelper::InitWalletResultObserver initObserver;
@@ -327,7 +327,7 @@ std::string tryToOpenWalletOrLoadKeysOrThrow(LoggerRef& logger, std::unique_ptr<
     logger(INFO) << "Storing wallet...";
 
     try {
-      CryptoNote::WalletHelper::storeWallet(*wallet, walletFileName);
+      Fortress::WalletHelper::storeWallet(*wallet, walletFileName);
     } catch(std::exception& e) {
       logger(ERROR, BRIGHT_RED) << "Failed to store wallet: " << e.what();
       throw std::runtime_error("error saving wallet file '" + walletFileName + "'");
@@ -444,7 +444,7 @@ bool simple_wallet::exit(const std::vector<std::string> &args) {
   return true;
 }
 
-simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::Currency& currency, Logging::LoggerManager& log) :
+simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const Fortress::Currency& currency, Logging::LoggerManager& log) :
   m_dispatcher(dispatcher),
   m_daemon_port(0), 
   m_currency(currency), 
@@ -664,7 +664,7 @@ bool simple_wallet::new_wallet(const std::string &wallet_file, const std::string
     }
 
     try {
-      CryptoNote::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
+      Fortress::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
     } catch (std::exception& e) {
       fail_msg_writer() << "failed to save new wallet: " << e.what();
       throw;
@@ -696,7 +696,7 @@ bool simple_wallet::new_wallet(const std::string &wallet_file, const std::string
 bool simple_wallet::close_wallet()
 {
   try {
-    CryptoNote::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
+    Fortress::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
   } catch (const std::exception& e) {
     fail_msg_writer() << e.what();
     return false;
@@ -712,7 +712,7 @@ bool simple_wallet::close_wallet()
 bool simple_wallet::save(const std::vector<std::string> &args)
 {
   try {
-    CryptoNote::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
+    Fortress::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
     success_msg_writer() << "Wallet data saved";
   } catch (const std::exception& e) {
     fail_msg_writer() << e.what();
@@ -823,7 +823,7 @@ void simple_wallet::connectionStatusUpdated(bool connected) {
   }
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::externalTransactionCreated(CryptoNote::TransactionId transactionId)  {
+void simple_wallet::externalTransactionCreated(Fortress::TransactionId transactionId)  {
   WalletLegacyTransaction txInfo;
   m_wallet->getTransaction(transactionId, txInfo);
   
@@ -927,7 +927,7 @@ bool simple_wallet::show_payments(const std::vector<std::string> &args) {
   bool payments_found = false;
   for (const std::string& arg: args) {
     Crypto::Hash expectedPaymentId;
-    if (CryptoNote::parsePaymentId(arg, expectedPaymentId)) {
+    if (Fortress::parsePaymentId(arg, expectedPaymentId)) {
       size_t transactionsCount = m_wallet->getTransactionCount();
       for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
         WalletLegacyTransaction txInfo;
@@ -938,7 +938,7 @@ bool simple_wallet::show_payments(const std::vector<std::string> &args) {
         std::for_each(txInfo.extra.begin(), txInfo.extra.end(), [&extraVec](const char el) { extraVec.push_back(el); });
 
         Crypto::Hash paymentId;
-        if (CryptoNote::getPaymentIdFromTxExtra(extraVec, paymentId) && paymentId == expectedPaymentId) {
+        if (Fortress::getPaymentIdFromTxExtra(extraVec, paymentId) && paymentId == expectedPaymentId) {
           payments_found = true;
           success_msg_writer(true) <<
             paymentId << "\t\t" <<
@@ -977,14 +977,14 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
 
     if (!cmd.parseArguments(logger, args))
       return false;
-    CryptoNote::WalletHelper::SendCompleteResultObserver sent;
+    Fortress::WalletHelper::SendCompleteResultObserver sent;
 
     std::string extraString;
     std::copy(cmd.extra.begin(), cmd.extra.end(), std::back_inserter(extraString));
 
     WalletHelper::IWalletRemoveObserverGuard removeGuard(*m_wallet, sent);
 
-    CryptoNote::TransactionId tx = m_wallet->sendTransaction(cmd.dsts, cmd.fee, extraString, cmd.fake_outs_count, 0);
+    Fortress::TransactionId tx = m_wallet->sendTransaction(cmd.dsts, cmd.fee, extraString, cmd.fake_outs_count, 0);
     if (tx == WALLET_LEGACY_INVALID_TRANSACTION_ID) {
       fail_msg_writer() << "Can't send money";
       return true;
@@ -998,12 +998,12 @@ bool simple_wallet::transfer(const std::vector<std::string> &args) {
       return true;
     }
 
-    CryptoNote::WalletLegacyTransaction txInfo;
+    Fortress::WalletLegacyTransaction txInfo;
     m_wallet->getTransaction(tx, txInfo);
     success_msg_writer(true) << "Money successfully sent, transaction " << Common::podToHex(txInfo.hash);
 
     try {
-      CryptoNote::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
+      Fortress::WalletHelper::storeWallet(*m_wallet, m_wallet_file);
     } catch (const std::exception& e) {
       fail_msg_writer() << e.what();
       return true;
@@ -1089,15 +1089,15 @@ int main(int argc, char* argv[]) {
     po::store(command_line::parse_command_line(argc, argv, desc_general, true), vm);
 
     if (command_line::get_arg(vm, command_line::arg_help)) {
-      CryptoNote::Currency tmp_currency = CryptoNote::CurrencyBuilder(logManager).currency();
-      CryptoNote::simple_wallet tmp_wallet(dispatcher, tmp_currency, logManager);
+      Fortress::Currency tmp_currency = Fortress::CurrencyBuilder(logManager).currency();
+      Fortress::simple_wallet tmp_wallet(dispatcher, tmp_currency, logManager);
 
-      std::cout << CRYPTONOTE_NAME << " wallet v" << PROJECT_VERSION_LONG << std::endl;
+      std::cout << Fortress_NAME << " wallet v" << PROJECT_VERSION_LONG << std::endl;
       std::cout << "Usage: simplewallet [--wallet-file=<file>|--generate-new-wallet=<file>] [--daemon-address=<host>:<port>] [<COMMAND>]";
       std::cout << desc_all << '\n' << tmp_wallet.get_commands_str();
       return false;
     } else if (command_line::get_arg(vm, command_line::arg_version))  {
-      std::cout << CRYPTONOTE_NAME << " wallet v" << PROJECT_VERSION_LONG;
+      std::cout << Fortress_NAME << " wallet v" << PROJECT_VERSION_LONG;
       return false;
     }
 
@@ -1119,9 +1119,9 @@ int main(int argc, char* argv[]) {
 
   logManager.configure(buildLoggerConfiguration(logLevel, Common::ReplaceExtenstion(argv[0], ".log")));
 
-  logger(INFO, BRIGHT_WHITE) << CRYPTONOTE_NAME << " wallet v" << PROJECT_VERSION_LONG;
+  logger(INFO, BRIGHT_WHITE) << Fortress_NAME << " wallet v" << PROJECT_VERSION_LONG;
 
-  CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logManager).
+  Fortress::Currency currency = Fortress::CurrencyBuilder(logManager).
     testnet(command_line::get_arg(vm, arg_testnet)).currency();
 
   if (command_line::has_arg(vm, Tools::wallet_rpc_server::arg_rpc_bind_port)) {
@@ -1201,7 +1201,7 @@ int main(int argc, char* argv[]) {
     
     try {
       logger(INFO) << "Storing wallet...";
-      CryptoNote::WalletHelper::storeWallet(*wallet, walletFileName);
+      Fortress::WalletHelper::storeWallet(*wallet, walletFileName);
       logger(INFO, BRIGHT_GREEN) << "Stored ok";
     } catch (const std::exception& e) {
       logger(ERROR, BRIGHT_RED) << "Failed to store wallet: " << e.what();
@@ -1209,7 +1209,7 @@ int main(int argc, char* argv[]) {
     }
   } else {
     //runs wallet with console interface
-    CryptoNote::simple_wallet wal(dispatcher, currency, logManager);
+    Fortress::simple_wallet wal(dispatcher, currency, logManager);
     
     if (!wal.init(vm)) {
       logger(ERROR, BRIGHT_RED) << "Failed to initialize wallet"; 

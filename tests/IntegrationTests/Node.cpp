@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,8 +14,8 @@
 #include <Serialization/JsonInputStreamSerializer.h>
 #include <Serialization/SerializationOverloads.h>
 
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Currency.h"
+#include "FortressCore/FortressTools.h"
 #include "Wallet/WalletGreen.h"
 
 #include "../IntegrationTestLib/TestNetwork.h"
@@ -25,9 +25,9 @@
 #include "BaseTests.h"
 
 using namespace Tests;
-using namespace CryptoNote;
+using namespace Fortress;
 
-namespace CryptoNote {
+namespace Fortress {
   void serialize(BlockShortEntry& v, ISerializer& s) {
     s(v.blockHash, "hash");
     
@@ -180,7 +180,7 @@ TEST_F(NodeTest, generateBlockchain) {
     ASSERT_TRUE(daemon.makeINode(mainNode));
 
     std::string password = "pass";
-    CryptoNote::WalletGreen wallet(dispatcher, currency, *mainNode);
+    Fortress::WalletGreen wallet(dispatcher, currency, *mainNode);
 
     wallet.initialize(password);
 
@@ -228,7 +228,7 @@ TEST_F(NodeTest, addMoreBlocks) {
     auto startHeight = daemon.getLocalHeight();
 
     std::string password = "pass";
-    CryptoNote::WalletGreen wallet(dispatcher, currency, *mainNode);
+    Fortress::WalletGreen wallet(dispatcher, currency, *mainNode);
 
     {
       std::ifstream walletFile("wallet.bin", std::ios::binary);

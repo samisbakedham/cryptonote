@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,9 +11,9 @@
 #include "Logging/LoggerRef.h"
 #include "PaymentGate/PaymentServiceJsonRpcServer.h"
 
-#include "CryptoNoteCore/CoreConfig.h"
-#include "CryptoNoteCore/Core.h"
-#include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
+#include "FortressCore/CoreConfig.h"
+#include "FortressCore/Core.h"
+#include "FortressProtocol/FortressProtocolHandler.h"
 #include "P2p/NetNode.h"
 #include "PaymentGate/WalletFactory.h"
 #include <System/Context.h>
@@ -79,7 +79,7 @@ WalletConfiguration PaymentGateService::getWalletConfig() const {
   };
 }
 
-const CryptoNote::Currency PaymentGateService::getCurrency() {
+const Fortress::Currency PaymentGateService::getCurrency() {
   return currencyBuilder.currency();
 }
 
@@ -132,14 +132,14 @@ void PaymentGateService::runInProcess(Logging::LoggerRef& log) {
 
   log(Logging::INFO) << "Starting Payment Gate with local node";
 
-  CryptoNote::Currency currency = currencyBuilder.currency();
-  CryptoNote::core core(currency, NULL, logger);
+  Fortress::Currency currency = currencyBuilder.currency();
+  Fortress::core core(currency, NULL, logger);
 
-  CryptoNote::CryptoNoteProtocolHandler protocol(currency, *dispatcher, core, NULL, logger);
-  CryptoNote::NodeServer p2pNode(*dispatcher, protocol, logger);
+  Fortress::FortressProtocolHandler protocol(currency, *dispatcher, core, NULL, logger);
+  Fortress::NodeServer p2pNode(*dispatcher, protocol, logger);
 
   protocol.set_p2p_endpoint(&p2pNode);
-  core.set_cryptonote_protocol(&protocol);
+  core.set_Fortress_protocol(&protocol);
 
   log(Logging::INFO) << "initializing p2pNode";
   if (!p2pNode.init(config.netNodeConfig)) {
@@ -147,13 +147,13 @@ void PaymentGateService::runInProcess(Logging::LoggerRef& log) {
   }
 
   log(Logging::INFO) << "initializing core";
-  CryptoNote::MinerConfig emptyMiner;
+  Fortress::MinerConfig emptyMiner;
   core.init(config.coreConfig, emptyMiner, true);
 
   std::promise<std::error_code> initPromise;
   auto initFuture = initPromise.get_future();
 
-  std::unique_ptr<CryptoNote::INode> node(new CryptoNote::InProcessNode(core, protocol));
+  std::unique_ptr<Fortress::INode> node(new Fortress::InProcessNode(core, protocol));
 
   node->init([&initPromise, &log](std::error_code ec) {
     if (ec) {
@@ -192,9 +192,9 @@ void PaymentGateService::runInProcess(Logging::LoggerRef& log) {
 
 void PaymentGateService::runRpcProxy(Logging::LoggerRef& log) {
   log(Logging::INFO) << "Starting Payment Gate with remote node";
-  CryptoNote::Currency currency = currencyBuilder.currency();
+  Fortress::Currency currency = currencyBuilder.currency();
   
-  std::unique_ptr<CryptoNote::INode> node(
+  std::unique_ptr<Fortress::INode> node(
     PaymentService::NodeFactory::createNode(
       config.remoteNodeConfig.daemonHost, 
       config.remoteNodeConfig.daemonPort));
@@ -202,13 +202,13 @@ void PaymentGateService::runRpcProxy(Logging::LoggerRef& log) {
   runWalletService(currency, *node);
 }
 
-void PaymentGateService::runWalletService(const CryptoNote::Currency& currency, CryptoNote::INode& node) {
+void PaymentGateService::runWalletService(const Fortress::Currency& currency, Fortress::INode& node) {
   PaymentService::WalletConfiguration walletConfiguration{
     config.gateConfiguration.containerFile,
     config.gateConfiguration.containerPassword
   };
 
-  std::unique_ptr<CryptoNote::IWallet> wallet (WalletFactory::createWallet(currency, node, *dispatcher));
+  std::unique_ptr<Fortress::IWallet> wallet (WalletFactory::createWallet(currency, node, *dispatcher));
 
   service = new PaymentService::WalletService(currency, *dispatcher, node, *wallet, walletConfiguration, logger);
   std::unique_ptr<PaymentService::WalletService> serviceGuard(service);

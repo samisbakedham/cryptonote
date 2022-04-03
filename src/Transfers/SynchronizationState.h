@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 
-namespace CryptoNote {
+namespace Fortress {
 
 class SynchronizationState : public IStreamSerializable {
 public:
@@ -41,7 +41,7 @@ public:
   virtual void load(std::istream& in) override;
 
   // serialization
-  CryptoNote::ISerializer& serialize(CryptoNote::ISerializer& s, const std::string& name);
+  Fortress::ISerializer& serialize(Fortress::ISerializer& s, const std::string& name);
 
 private:
 

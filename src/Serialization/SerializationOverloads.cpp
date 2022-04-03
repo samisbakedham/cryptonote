@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +6,7 @@
 
 #include <limits>
 
-namespace CryptoNote {
+namespace Fortress {
 
 void serializeBlockHeight(ISerializer& s, uint32_t& blockHeight, Common::StringView name) {
   if (s.type() == ISerializer::INPUT) {
@@ -29,4 +29,4 @@ void serializeGlobalOutputIndex(ISerializer& s, uint32_t& globalOutputIndex, Com
   serializeBlockHeight(s, globalOutputIndex, name);
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

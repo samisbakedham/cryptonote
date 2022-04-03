@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,14 +8,14 @@
 #include <boost/range/combine.hpp>
 
 #include "Common/StringTools.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/TransactionExtra.h"
-#include "CryptoNoteConfig.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/TransactionExtra.h"
+#include "FortressConfig.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
-BlockchainExplorerDataBuilder::BlockchainExplorerDataBuilder(CryptoNote::ICore& core, CryptoNote::ICryptoNoteProtocolQuery& protocol) :
+BlockchainExplorerDataBuilder::BlockchainExplorerDataBuilder(Fortress::ICore& core, Fortress::IFortressProtocolQuery& protocol) :
 core(core),
 protocol(protocol) {
 }
@@ -104,7 +104,7 @@ bool BlockchainExplorerDataBuilder::fillBlockDetails(const Block &block, BlockDe
   }
 
   std::vector<size_t> blocksSizes;
-  if (!core.getBackwardBlocksSizes(blockDetails.height, blocksSizes, parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW)) {
+  if (!core.getBackwardBlocksSizes(blockDetails.height, blocksSizes, parameters::Fortress_REWARD_BLOCKS_WINDOW)) {
     return false;
   }
   blockDetails.sizeMedian = median(blocksSizes);

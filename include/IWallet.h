@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,9 +7,9 @@
 #include <limits>
 #include <string>
 #include <vector>
-#include "CryptoNote.h"
+#include "Fortress.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 const size_t WALLET_INVALID_TRANSACTION_ID = std::numeric_limits<size_t>::max();
 const size_t WALLET_INVALID_TRANSFER_ID = std::numeric_limits<size_t>::max();

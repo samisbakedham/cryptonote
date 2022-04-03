@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,8 +19,8 @@
 #include <System/InterruptedException.h>
 
 #include "P2p/NetNodeConfig.h"
-#include "CryptoNoteCore/CoreConfig.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/CoreConfig.h"
+#include "FortressCore/FortressTools.h"
 #include "WalletLegacy/WalletLegacy.h"
 
 #include "Logger.h"
@@ -35,9 +35,9 @@
 #endif
 
 #ifdef _WIN32
-const std::string DAEMON_FILENAME = std::string(CRYPTONOTE_NAME) + "d.exe";
+const std::string DAEMON_FILENAME = std::string(Fortress_NAME) + "d.exe";
 #else
-const std::string DAEMON_FILENAME = std::string(CRYPTONOTE_NAME) + "d";
+const std::string DAEMON_FILENAME = std::string(Fortress_NAME) + "d";
 #endif
 
 using namespace Tests::Common;
@@ -154,7 +154,7 @@ void BaseFunctionalTests::startNode(size_t index) {
     << "rpc-bind-port=" << rpcPort << std::endl
     << "p2p-bind-port=" << p2pPort << std::endl
     << "log-level=4" << std::endl
-    << "log-file=test_" << CRYPTONOTE_NAME << "d_" << index << ".log" << std::endl;
+    << "log-file=test_" << Fortress_NAME << "d_" << index << ".log" << std::endl;
 
   switch (m_topology) {
   case Line:
@@ -189,7 +189,7 @@ void BaseFunctionalTests::startNode(size_t index) {
   }
 
 #if defined WIN32
-  std::string commandLine = "start /MIN \"" + std::string(CRYPTONOTE_NAME) + "d" + std::to_string(index) + "\" \"" + daemonPath.string() +
+  std::string commandLine = "start /MIN \"" + std::string(Fortress_NAME) + "d" + std::to_string(index) + "\" \"" + daemonPath.string() +
     "\" --testnet --data-dir=\"" + dataDirPath + "\" --config-file=daemon.conf";
   LOG_DEBUG(commandLine);
   system(commandLine.c_str());
@@ -201,7 +201,7 @@ void BaseFunctionalTests::startNode(size_t index) {
     close(2);
     std::string dataDir = "--data-dir=" + dataDirPath + "";
     LOG_TRACE(pathToDaemon);
-    if (execl(pathToDaemon.c_str(), (std::string(CRYPTONOTE_NAME) + "d").c_str(), "--testnet", dataDir.c_str(), "--config-file=daemon.conf", NULL) == -1) {
+    if (execl(pathToDaemon.c_str(), (std::string(Fortress_NAME) + "d").c_str(), "--testnet", dataDir.c_str(), "--config-file=daemon.conf", NULL) == -1) {
       LOG_ERROR(TO_STRING(errno));
     }
     abort();
@@ -281,20 +281,20 @@ BaseFunctionalTests::~BaseFunctionalTests() {
 }
 
 namespace {
-  class WaitForCoinBaseObserver : public CryptoNote::IWalletLegacyObserver {
+  class WaitForCoinBaseObserver : public Fortress::IWalletLegacyObserver {
     Semaphore& m_gotReward;
-    CryptoNote::IWalletLegacy& m_wallet;
+    Fortress::IWalletLegacy& m_wallet;
   public:
-    WaitForCoinBaseObserver(Semaphore& gotReward, CryptoNote::IWalletLegacy& wallet) : m_gotReward(gotReward), m_wallet(wallet) { }
-    virtual void externalTransactionCreated(CryptoNote::TransactionId transactionId) override {
-      CryptoNote::WalletLegacyTransaction trInfo;
+    WaitForCoinBaseObserver(Semaphore& gotReward, Fortress::IWalletLegacy& wallet) : m_gotReward(gotReward), m_wallet(wallet) { }
+    virtual void externalTransactionCreated(Fortress::TransactionId transactionId) override {
+      Fortress::WalletLegacyTransaction trInfo;
       m_wallet.getTransaction(transactionId, trInfo);
       if (trInfo.isCoinbase) m_gotReward.notify();
     }
   };
 }
 
-bool BaseFunctionalTests::mineBlocks(TestNode& node, const CryptoNote::AccountPublicAddress& address, size_t blockCount) {
+bool BaseFunctionalTests::mineBlocks(TestNode& node, const Fortress::AccountPublicAddress& address, size_t blockCount) {
   for (size_t i = 0; i < blockCount; ++i) {
     Block blockTemplate;
     uint64_t difficulty;
@@ -315,15 +315,15 @@ bool BaseFunctionalTests::mineBlocks(TestNode& node, const CryptoNote::AccountPu
   return true;
 }
 
-bool BaseFunctionalTests::prepareAndSubmitBlock(TestNode& node, CryptoNote::Block&& blockTemplate) {
+bool BaseFunctionalTests::prepareAndSubmitBlock(TestNode& node, Fortress::Block&& blockTemplate) {
   blockTemplate.timestamp = m_nextTimestamp;
   m_nextTimestamp += 2 * m_currency.difficultyTarget();
 
-  BinaryArray blockBlob = CryptoNote::toBinaryArray(blockTemplate);
+  BinaryArray blockBlob = Fortress::toBinaryArray(blockTemplate);
   return node.submitBlock(::Common::toHex(blockBlob.data(), blockBlob.size()));
 }
 
-bool BaseFunctionalTests::mineBlock(std::unique_ptr<CryptoNote::IWalletLegacy> &wallet) {
+bool BaseFunctionalTests::mineBlock(std::unique_ptr<Fortress::IWalletLegacy> &wallet) {
   if (nodeDaemons.empty() || !wallet)
     return false;
   if (!nodeDaemons.front()->stopMining())
@@ -356,9 +356,9 @@ bool BaseFunctionalTests::stopMining() {
   return nodeDaemons.front()->stopMining();
 }
 
-bool BaseFunctionalTests::makeWallet(std::unique_ptr<CryptoNote::IWalletLegacy> & wallet, std::unique_ptr<CryptoNote::INode>& node, const std::string& password) {
+bool BaseFunctionalTests::makeWallet(std::unique_ptr<Fortress::IWalletLegacy> & wallet, std::unique_ptr<Fortress::INode>& node, const std::string& password) {
   if (!node) return false;
-  wallet = std::unique_ptr<CryptoNote::IWalletLegacy>(new CryptoNote::WalletLegacy(m_currency, *node));
+  wallet = std::unique_ptr<Fortress::IWalletLegacy>(new Fortress::WalletLegacy(m_currency, *node));
   wallet->initAndGenerate(password);
   return true;
 }
@@ -399,7 +399,7 @@ void BaseFunctionalTests::stopTestnet() {
 }
 
 namespace {
-  struct PeerCountWaiter : CryptoNote::INodeObserver {
+  struct PeerCountWaiter : Fortress::INodeObserver {
     System::Dispatcher& m_dispatcher;
     System::Event m_event;
     System::Timer m_timer;
@@ -443,7 +443,7 @@ namespace {
   };
 }
 
-bool BaseFunctionalTests::waitForPeerCount(CryptoNote::INode& node, size_t expectedPeerCount) {
+bool BaseFunctionalTests::waitForPeerCount(Fortress::INode& node, size_t expectedPeerCount) {
   PeerCountWaiter peerCountWaiter(m_dispatcher);
   node.addObserver(&peerCountWaiter);
   if (node.getPeerCount() != expectedPeerCount) {
@@ -472,8 +472,8 @@ namespace {
   };
 }
 
-bool BaseFunctionalTests::waitForPoolSize(size_t nodeIndex, CryptoNote::INode& node, size_t expectedPoolSize,
-  std::vector<std::unique_ptr<CryptoNote::ITransactionReader>>& txPool) {
+bool BaseFunctionalTests::waitForPoolSize(size_t nodeIndex, Fortress::INode& node, size_t expectedPoolSize,
+  std::vector<std::unique_ptr<Fortress::ITransactionReader>>& txPool) {
   System::Event event(m_dispatcher);
   PoolUpdateWaiter poolUpdateWaiter(m_dispatcher, event);
   node.addObserver(&poolUpdateWaiter);
@@ -509,8 +509,8 @@ bool BaseFunctionalTests::waitForPoolSize(size_t nodeIndex, CryptoNote::INode& n
   return ok;
 }
 
-bool BaseFunctionalTests::getNodeTransactionPool(size_t nodeIndex, CryptoNote::INode& node,
-  std::vector<std::unique_ptr<CryptoNote::ITransactionReader>>& txPool) {
+bool BaseFunctionalTests::getNodeTransactionPool(size_t nodeIndex, Fortress::INode& node,
+  std::vector<std::unique_ptr<Fortress::ITransactionReader>>& txPool) {
 
   assert(nodeIndex < nodeDaemons.size() && nodeDaemons[nodeIndex].get() != nullptr);
   auto& daemon = *nodeDaemons[nodeIndex];

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,8 +9,8 @@
 #include <sstream>
 #include <unordered_set>
 
-#include "CryptoNoteCore/TransactionApi.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "FortressCore/TransactionApi.h"
+#include "FortressCore/FortressFormatUtils.h"
 
 using namespace Crypto;
 
@@ -25,7 +25,7 @@ inline std::vector<uint8_t> stringToVector(const std::string& s) {
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 BlockchainSynchronizer::BlockchainSynchronizer(INode& node, const Hash& genesisBlockHash) :
   m_node(node),

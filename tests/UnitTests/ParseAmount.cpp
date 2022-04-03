@@ -1,14 +1,14 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "gtest/gtest.h"
 
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/Currency.h"
 #include <Logging/LoggerGroup.h>
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace
 {
@@ -17,7 +17,7 @@ namespace
   void do_pos_test(uint64_t expected, const std::string& str)
   {
     Logging::LoggerGroup logger;
-    CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logger).numberOfDecimalPlaces(TEST_NUMBER_OF_DECIMAL_PLACES).currency();
+    Fortress::Currency currency = Fortress::CurrencyBuilder(logger).numberOfDecimalPlaces(TEST_NUMBER_OF_DECIMAL_PLACES).currency();
     uint64_t val;
     std::string number_str = str;
     std::replace(number_str.begin(), number_str.end(), '_', '.');
@@ -29,7 +29,7 @@ namespace
   void do_neg_test(const std::string& str)
   {
     Logging::LoggerGroup logger;
-    CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logger).numberOfDecimalPlaces(TEST_NUMBER_OF_DECIMAL_PLACES).currency();
+    Fortress::Currency currency = Fortress::CurrencyBuilder(logger).numberOfDecimalPlaces(TEST_NUMBER_OF_DECIMAL_PLACES).currency();
     uint64_t val;
     std::string number_str = str;
     std::replace(number_str.begin(), number_str.end(), '_', '.');

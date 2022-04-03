@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,8 +15,8 @@
 #include "PasswordContainer.h"
 
 #include "Common/ConsoleHandler.h"
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/FortressBasicImpl.h"
+#include "FortressCore/Currency.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 #include "WalletLegacy/WalletHelper.h"
 
@@ -26,14 +26,14 @@
 #include <System/Dispatcher.h>
 #include <System/Ipv4Address.h>
 
-namespace CryptoNote
+namespace Fortress
 {
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class simple_wallet : public CryptoNote::INodeObserver, public CryptoNote::IWalletLegacyObserver, public CryptoNote::INodeRpcProxyObserver {
+  class simple_wallet : public Fortress::INodeObserver, public Fortress::IWalletLegacyObserver, public Fortress::INodeRpcProxyObserver {
   public:
-    simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::Currency& currency, Logging::LoggerManager& log);
+    simple_wallet(System::Dispatcher& dispatcher, const Fortress::Currency& currency, Logging::LoggerManager& log);
 
     bool init(const boost::program_options::variables_map& vm);
     bool deinit();
@@ -43,7 +43,7 @@ namespace CryptoNote
     bool process_command(const std::vector<std::string> &args);
     std::string get_commands_str();
 
-    const CryptoNote::Currency& currency() const { return m_currency; }
+    const Fortress::Currency& currency() const { return m_currency; }
 
   private:
 
@@ -86,7 +86,7 @@ namespace CryptoNote
 
     //---------------- IWalletLegacyObserver -------------------------
     virtual void initCompleted(std::error_code result) override;
-    virtual void externalTransactionCreated(CryptoNote::TransactionId transactionId) override;
+    virtual void externalTransactionCreated(Fortress::TransactionId transactionId) override;
     virtual void synchronizationCompleted(std::error_code result) override;
     virtual void synchronizationProgressUpdated(uint32_t current, uint32_t total) override;
     //----------------------------------------------------------
@@ -100,7 +100,7 @@ namespace CryptoNote
     class refresh_progress_reporter_t
     {
     public:
-      refresh_progress_reporter_t(CryptoNote::simple_wallet& simple_wallet)
+      refresh_progress_reporter_t(Fortress::simple_wallet& simple_wallet)
         : m_simple_wallet(simple_wallet)
         , m_blockchain_height(0)
         , m_blockchain_height_update_time()
@@ -132,7 +132,7 @@ namespace CryptoNote
       }
 
     private:
-      CryptoNote::simple_wallet& m_simple_wallet;
+      Fortress::simple_wallet& m_simple_wallet;
       uint64_t m_blockchain_height;
       std::chrono::system_clock::time_point m_blockchain_height_update_time;
       std::chrono::system_clock::time_point m_print_time;
@@ -152,13 +152,13 @@ namespace CryptoNote
     std::unique_ptr<std::promise<std::error_code>> m_initResultPromise;
 
     Common::ConsoleHandler m_consoleHandler;
-    const CryptoNote::Currency& m_currency;
+    const Fortress::Currency& m_currency;
     Logging::LoggerManager& logManager;
     System::Dispatcher& m_dispatcher;
     Logging::LoggerRef logger;
 
-    std::unique_ptr<CryptoNote::NodeRpcProxy> m_node;
-    std::unique_ptr<CryptoNote::IWalletLegacy> m_wallet;
+    std::unique_ptr<Fortress::NodeRpcProxy> m_node;
+    std::unique_ptr<Fortress::IWalletLegacy> m_wallet;
     refresh_progress_reporter_t m_refresh_progress_reporter;
 
     bool m_walletSynchronized;

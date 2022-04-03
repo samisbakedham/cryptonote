@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,7 +16,7 @@ namespace PaymentService {
 
 class WalletService;
 
-class PaymentServiceJsonRpcServer : public CryptoNote::JsonRpcServer {
+class PaymentServiceJsonRpcServer : public Fortress::JsonRpcServer {
 public:
   PaymentServiceJsonRpcServer(System::Dispatcher& sys, System::Event& stopEvent, WalletService& service, Logging::ILogger& loggerGroup);
   PaymentServiceJsonRpcServer(const PaymentServiceJsonRpcServer&) = delete;
@@ -37,7 +37,7 @@ private:
       ResponseType response;
 
       try {
-        CryptoNote::JsonInputValueSerializer inputSerializer(const_cast<Common::JsonValue&>(jsonRpcParams));
+        Fortress::JsonInputValueSerializer inputSerializer(const_cast<Common::JsonValue&>(jsonRpcParams));
         serialize(request, inputSerializer);
       } catch (std::exception&) {
         makeGenericErrorReponse(jsonResponse, "Invalid Request", -32600);
@@ -50,7 +50,7 @@ private:
         return;
       }
 
-      CryptoNote::JsonOutputStreamSerializer outputSerializer;
+      Fortress::JsonOutputStreamSerializer outputSerializer;
       serialize(response, outputSerializer);
       fillJsonResponse(outputSerializer.getValue(), jsonResponse);
     };

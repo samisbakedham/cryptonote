@@ -1,16 +1,16 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "crypto/crypto.h" //for rand()
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
 
 #include "WalletLegacy/WalletTransactionSender.h"
 #include "WalletLegacy/WalletUtils.h"
 
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
+#include "FortressCore/FortressBasicImpl.h"
 
 #include <Logging/LoggerGroup.h>
 
@@ -20,7 +20,7 @@ using namespace Crypto;
 
 namespace {
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 uint64_t countNeededMoney(uint64_t fee, const std::vector<WalletLegacyTransfer>& transfers) {
   uint64_t needed_money = fee;
@@ -62,7 +62,7 @@ std::shared_ptr<WalletLegacyEvent> makeCompleteEvent(WalletUserTransactionsCache
 
 } //namespace
 
-namespace CryptoNote {
+namespace Fortress {
 
 WalletTransactionSender::WalletTransactionSender(const Currency& currency, WalletUserTransactionsCache& transactionsCache, AccountKeys keys, ITransfersContainer& transfersContainer) :
   m_currency(currency),
@@ -92,7 +92,7 @@ void WalletTransactionSender::validateTransfersAddresses(const std::vector<Walle
 std::shared_ptr<WalletRequest> WalletTransactionSender::makeSendRequest(TransactionId& transactionId, std::deque<std::shared_ptr<WalletLegacyEvent>>& events,
     const std::vector<WalletLegacyTransfer>& transfers, uint64_t fee, const std::string& extra, uint64_t mixIn, uint64_t unlockTimestamp) {
 
-  using namespace CryptoNote;
+  using namespace Fortress;
 
   throwIf(transfers.empty(), error::ZERO_DESTINATION);
   validateTransfersAddresses(transfers);
@@ -364,4 +364,4 @@ uint64_t WalletTransactionSender::selectTransfersToSend(uint64_t neededMoney, bo
 }
 
 
-} /* namespace CryptoNote */
+} /* namespace Fortress */

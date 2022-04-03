@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,13 +6,13 @@
 #include "WalletLegacy/WalletUnconfirmedTransactions.h"
 #include "IWalletLegacy.h"
 
-#include "CryptoNoteCore/CryptoNoteSerialization.h"
+#include "FortressCore/FortressSerialization.h"
 #include "Serialization/ISerializer.h"
 #include "Serialization/SerializationOverloads.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
-void serialize(UnconfirmedTransferDetails& utd, CryptoNote::ISerializer& serializer) {
+void serialize(UnconfirmedTransferDetails& utd, Fortress::ISerializer& serializer) {
   serializer(utd.tx, "transaction");
   serializer(utd.amount, "amount");
   serializer(utd.outsAmount, "outs_amount");
@@ -24,7 +24,7 @@ void serialize(UnconfirmedTransferDetails& utd, CryptoNote::ISerializer& seriali
   utd.transactionId = static_cast<size_t>(txId);
 }
 
-void serialize(WalletLegacyTransaction& txi, CryptoNote::ISerializer& serializer) {
+void serialize(WalletLegacyTransaction& txi, Fortress::ISerializer& serializer) {
   uint64_t trId = static_cast<uint64_t>(txi.firstTransferId);
   serializer(trId, "first_transfer_id");
   txi.firstTransferId = static_cast<size_t>(trId);
@@ -39,7 +39,7 @@ void serialize(WalletLegacyTransaction& txi, CryptoNote::ISerializer& serializer
   serializer(txi.hash, "hash");
   serializer(txi.isCoinbase, "is_coinbase");
 
-  CryptoNote::serializeBlockHeight(serializer, txi.blockHeight, "block_height");
+  Fortress::serializeBlockHeight(serializer, txi.blockHeight, "block_height");
 
   serializer(txi.timestamp, "timestamp");
   serializer(txi.unlockTime, "unlock_time");
@@ -51,9 +51,9 @@ void serialize(WalletLegacyTransaction& txi, CryptoNote::ISerializer& serializer
   txi.sentTime = 0;
 }
 
-void serialize(WalletLegacyTransfer& tr, CryptoNote::ISerializer& serializer) {
+void serialize(WalletLegacyTransfer& tr, Fortress::ISerializer& serializer) {
   serializer(tr.address, "address");
   serializer(tr.amount, "amount");
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

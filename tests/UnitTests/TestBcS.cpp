@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,9 +8,9 @@
 #include "Transfers/TransfersConsumer.h"
 
 #include "crypto/hash.h"
-#include "CryptoNoteCore/TransactionApi.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/TransactionApi.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
 #include "Logging/ConsoleLogger.h"
 
 #include "INodeStubs.h"
@@ -18,7 +18,7 @@
 #include "EventWaiter.h"
 
 using namespace Crypto;
-using namespace CryptoNote;
+using namespace Fortress;
 
 
 namespace {

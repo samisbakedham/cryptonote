@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "gtest/gtest.h"
 #include <tuple>
 
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/TransactionApi.h"
 #include "Logging/ConsoleLogger.h"
 #include "Transfers/TransfersSubscription.h"
 #include "Transfers/TypeHelpers.h"
@@ -14,7 +14,7 @@
 #include "TransactionApiHelpers.h"
 #include "TransfersObserver.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace {
 

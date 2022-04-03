@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "FortressCore/FortressBasic.h"
 
 #include "SingleTransactionTestBase.h"
 
@@ -16,7 +16,7 @@ public:
 
   bool init()
   {
-    using namespace CryptoNote;
+    using namespace Fortress;
 
     if (!single_tx_test_base::init())
       return false;
@@ -40,5 +40,5 @@ public:
   }
 
 private:
-  CryptoNote::KeyPair m_in_ephemeral;
+  Fortress::KeyPair m_in_ephemeral;
 };

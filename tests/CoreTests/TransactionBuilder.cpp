@@ -1,29 +1,29 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "TransactionBuilder.h"
-#include "CryptoNoteCore/TransactionExtra.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/TransactionExtra.h"
+#include "FortressCore/FortressTools.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Crypto;
 using namespace Common;
 
-TransactionBuilder::TransactionBuilder(const CryptoNote::Currency& currency, uint64_t unlockTime)
-  : m_currency(currency), m_version(CryptoNote::CURRENT_TRANSACTION_VERSION), m_unlockTime(unlockTime), m_txKey(generateKeyPair()) {}
+TransactionBuilder::TransactionBuilder(const Fortress::Currency& currency, uint64_t unlockTime)
+  : m_currency(currency), m_version(Fortress::CURRENT_TRANSACTION_VERSION), m_unlockTime(unlockTime), m_txKey(generateKeyPair()) {}
 
 TransactionBuilder& TransactionBuilder::newTxKeys() {
   m_txKey = generateKeyPair();
   return *this;
 }
 
-TransactionBuilder& TransactionBuilder::setTxKeys(const CryptoNote::KeyPair& txKeys) {
+TransactionBuilder& TransactionBuilder::setTxKeys(const Fortress::KeyPair& txKeys) {
   m_txKey = txKeys;
   return *this;
 }
 
-TransactionBuilder& TransactionBuilder::setInput(const std::vector<CryptoNote::TransactionSourceEntry>& sources, const CryptoNote::AccountKeys& senderKeys) {
+TransactionBuilder& TransactionBuilder::setInput(const std::vector<Fortress::TransactionSourceEntry>& sources, const Fortress::AccountKeys& senderKeys) {
   m_sources = sources;
   m_senderKeys = senderKeys;
   return *this;
@@ -34,12 +34,12 @@ TransactionBuilder& TransactionBuilder::addMultisignatureInput(const Multisignat
   return *this;
 }
 
-TransactionBuilder& TransactionBuilder::setOutput(const std::vector<CryptoNote::TransactionDestinationEntry>& destinations) {
+TransactionBuilder& TransactionBuilder::setOutput(const std::vector<Fortress::TransactionDestinationEntry>& destinations) {
   m_destinations = destinations;
   return *this;
 }
 
-TransactionBuilder& TransactionBuilder::addOutput(const CryptoNote::TransactionDestinationEntry& dest) {
+TransactionBuilder& TransactionBuilder::addOutput(const Fortress::TransactionDestinationEntry& dest) {
   m_destinations.push_back(dest);
   return *this;
 }
@@ -66,7 +66,7 @@ Transaction TransactionBuilder::build() const {
   tx.version = static_cast<uint8_t>(m_version);
   tx.unlockTime = m_unlockTime;
 
-  std::vector<CryptoNote::KeyPair> contexts;
+  std::vector<Fortress::KeyPair> contexts;
 
   fillInputs(tx, contexts);
   fillOutputs(tx);
@@ -78,7 +78,7 @@ Transaction TransactionBuilder::build() const {
   return tx;
 }
 
-void TransactionBuilder::fillInputs(Transaction& tx, std::vector<CryptoNote::KeyPair>& contexts) const {
+void TransactionBuilder::fillInputs(Transaction& tx, std::vector<Fortress::KeyPair>& contexts) const {
   for (const TransactionSourceEntry& src_entr : m_sources) {
     contexts.push_back(KeyPair());
     KeyPair& in_ephemeral = contexts.back();
@@ -143,7 +143,7 @@ void TransactionBuilder::fillOutputs(Transaction& tx) const {
 }
 
 
-void TransactionBuilder::signSources(const Crypto::Hash& prefixHash, const std::vector<CryptoNote::KeyPair>& contexts, Transaction& tx) const {
+void TransactionBuilder::signSources(const Crypto::Hash& prefixHash, const std::vector<Fortress::KeyPair>& contexts, Transaction& tx) const {
   
   tx.signatures.clear();
 

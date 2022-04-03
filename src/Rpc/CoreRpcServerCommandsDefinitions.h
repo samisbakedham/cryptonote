@@ -1,17 +1,17 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
-#include "CryptoNoteProtocol/CryptoNoteProtocolDefinitions.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/Difficulty.h"
+#include "FortressProtocol/FortressProtocolDefinitions.h"
+#include "FortressCore/FortressBasic.h"
+#include "FortressCore/Difficulty.h"
 #include "crypto/hash.h"
 
 #include "Serialization/SerializationOverloads.h"
 
-namespace CryptoNote {
+namespace Fortress {
 //-----------------------------------------------
 #define CORE_RPC_STATUS_OK "OK"
 #define CORE_RPC_STATUS_BUSY "BUSY"

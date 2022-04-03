@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "BlockReward.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/FortressTools.h"
 #include <Common/Math.h>
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace
 {
@@ -38,7 +38,7 @@ namespace
 
 gen_block_reward::gen_block_reward()
   : m_invalid_block_index(0) {
-  CryptoNote::CurrencyBuilder currencyBuilder(m_logger);
+  Fortress::CurrencyBuilder currencyBuilder(m_logger);
   currencyBuilder.maxBlockSizeInitial(std::numeric_limits<size_t>::max() / 2);
   m_currency = currencyBuilder.currency();
 
@@ -146,7 +146,7 @@ bool gen_block_reward::generate(std::vector<test_event_entry>& events) const
   return true;
 }
 
-bool gen_block_reward::check_block_verification_context(const CryptoNote::block_verification_context& bvc, size_t event_idx, const CryptoNote::Block& /*blk*/)
+bool gen_block_reward::check_block_verification_context(const Fortress::block_verification_context& bvc, size_t event_idx, const Fortress::Block& /*blk*/)
 {
   if (m_invalid_block_index == event_idx)
   {
@@ -159,19 +159,19 @@ bool gen_block_reward::check_block_verification_context(const CryptoNote::block_
   }
 }
 
-bool gen_block_reward::mark_invalid_block(CryptoNote::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
+bool gen_block_reward::mark_invalid_block(Fortress::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
 {
   m_invalid_block_index = ev_index + 1;
   return true;
 }
 
-bool gen_block_reward::mark_checked_block(CryptoNote::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
+bool gen_block_reward::mark_checked_block(Fortress::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
 {
   m_checked_blocks_indices.push_back(ev_index - 1);
   return true;
 }
 
-bool gen_block_reward::check_block_rewards(CryptoNote::core& /*c*/, size_t /*ev_index*/, const std::vector<test_event_entry>& events)
+bool gen_block_reward::check_block_rewards(Fortress::core& /*c*/, size_t /*ev_index*/, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_block_reward_without_txs::check_block_rewards");
 

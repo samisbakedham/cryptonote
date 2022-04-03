@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,11 +23,11 @@
 #include "Common/StdInputStream.h"
 #include "Common/StdOutputStream.h"
 #include "Common/StringTools.h"
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/Currency.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/TransactionApi.h"
 #include "crypto/crypto.h"
 #include "Transfers/TransfersContainer.h"
 #include "WalletSerialization.h"
@@ -36,7 +36,7 @@
 
 using namespace Common;
 using namespace Crypto;
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace {
 
@@ -44,38 +44,38 @@ void asyncRequestCompletion(System::Event& requestFinished) {
   requestFinished.set();
 }
 
-void parseAddressString(const std::string& string, const CryptoNote::Currency& currency, CryptoNote::AccountPublicAddress& address) {
+void parseAddressString(const std::string& string, const Fortress::Currency& currency, Fortress::AccountPublicAddress& address) {
   if (!currency.parseAccountAddressString(string, address)) {
-    throw std::system_error(make_error_code(CryptoNote::error::BAD_ADDRESS));
+    throw std::system_error(make_error_code(Fortress::error::BAD_ADDRESS));
   }
 }
 
-void validateAddresses(const std::vector<std::string>& addresses, const CryptoNote::Currency& currency) {
+void validateAddresses(const std::vector<std::string>& addresses, const Fortress::Currency& currency) {
   for (const auto& address: addresses) {
-    if (!CryptoNote::validateAddress(address, currency)) {
-      throw std::system_error(make_error_code(CryptoNote::error::BAD_ADDRESS));
+    if (!Fortress::validateAddress(address, currency)) {
+      throw std::system_error(make_error_code(Fortress::error::BAD_ADDRESS));
     }
   }
 }
 
-void validateOrders(const std::vector<WalletOrder>& orders, const CryptoNote::Currency& currency) {
+void validateOrders(const std::vector<WalletOrder>& orders, const Fortress::Currency& currency) {
   for (const auto& order: orders) {
-    if (!CryptoNote::validateAddress(order.address, currency)) {
-      throw std::system_error(make_error_code(CryptoNote::error::BAD_ADDRESS));
+    if (!Fortress::validateAddress(order.address, currency)) {
+      throw std::system_error(make_error_code(Fortress::error::BAD_ADDRESS));
     }
 
     if (order.amount >= static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
-      throw std::system_error(make_error_code(CryptoNote::error::WRONG_AMOUNT),
+      throw std::system_error(make_error_code(Fortress::error::WRONG_AMOUNT),
         "Order amount must not exceed " + std::to_string(std::numeric_limits<int64_t>::max()));
     }
   }
 }
 
-uint64_t countNeededMoney(const std::vector<CryptoNote::WalletTransfer>& destinations, uint64_t fee) {
+uint64_t countNeededMoney(const std::vector<Fortress::WalletTransfer>& destinations, uint64_t fee) {
   uint64_t neededMoney = 0;
   for (const auto& transfer: destinations) {
     if (transfer.amount == 0) {
-      throw std::system_error(make_error_code(CryptoNote::error::ZERO_DESTINATION));
+      throw std::system_error(make_error_code(Fortress::error::ZERO_DESTINATION));
     } else if (transfer.amount < 0) {
       throw std::system_error(make_error_code(std::errc::invalid_argument));
     }
@@ -84,66 +84,66 @@ uint64_t countNeededMoney(const std::vector<CryptoNote::WalletTransfer>& destina
     uint64_t uamount = static_cast<uint64_t>(transfer.amount);
     neededMoney += uamount;
     if (neededMoney < uamount) {
-      throw std::system_error(make_error_code(CryptoNote::error::SUM_OVERFLOW));
+      throw std::system_error(make_error_code(Fortress::error::SUM_OVERFLOW));
     }
   }
 
   neededMoney += fee;
   if (neededMoney < fee) {
-    throw std::system_error(make_error_code(CryptoNote::error::SUM_OVERFLOW));
+    throw std::system_error(make_error_code(Fortress::error::SUM_OVERFLOW));
   }
 
   return neededMoney;
 }
 
-void checkIfEnoughMixins(std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult, uint64_t mixIn) {
+void checkIfEnoughMixins(std::vector<Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult, uint64_t mixIn) {
   auto notEnoughIt = std::find_if(mixinResult.begin(), mixinResult.end(),
-    [mixIn] (const CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount& ofa) { return ofa.outs.size() < mixIn; } );
+    [mixIn] (const Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount& ofa) { return ofa.outs.size() < mixIn; } );
 
   if (mixIn == 0 && mixinResult.empty()) {
-    throw std::system_error(make_error_code(CryptoNote::error::MIXIN_COUNT_TOO_BIG));
+    throw std::system_error(make_error_code(Fortress::error::MIXIN_COUNT_TOO_BIG));
   }
 
   if (notEnoughIt != mixinResult.end()) {
-    throw std::system_error(make_error_code(CryptoNote::error::MIXIN_COUNT_TOO_BIG));
+    throw std::system_error(make_error_code(Fortress::error::MIXIN_COUNT_TOO_BIG));
   }
 }
 
-CryptoNote::WalletEvent makeTransactionUpdatedEvent(size_t id) {
-  CryptoNote::WalletEvent event;
-  event.type = CryptoNote::WalletEventType::TRANSACTION_UPDATED;
+Fortress::WalletEvent makeTransactionUpdatedEvent(size_t id) {
+  Fortress::WalletEvent event;
+  event.type = Fortress::WalletEventType::TRANSACTION_UPDATED;
   event.transactionUpdated.transactionIndex = id;
 
   return event;
 }
 
-CryptoNote::WalletEvent makeTransactionCreatedEvent(size_t id) {
-  CryptoNote::WalletEvent event;
-  event.type = CryptoNote::WalletEventType::TRANSACTION_CREATED;
+Fortress::WalletEvent makeTransactionCreatedEvent(size_t id) {
+  Fortress::WalletEvent event;
+  event.type = Fortress::WalletEventType::TRANSACTION_CREATED;
   event.transactionCreated.transactionIndex = id;
 
   return event;
 }
 
-CryptoNote::WalletEvent makeMoneyUnlockedEvent() {
-  CryptoNote::WalletEvent event;
-  event.type = CryptoNote::WalletEventType::BALANCE_UNLOCKED;
+Fortress::WalletEvent makeMoneyUnlockedEvent() {
+  Fortress::WalletEvent event;
+  event.type = Fortress::WalletEventType::BALANCE_UNLOCKED;
 
   return event;
 }
 
-CryptoNote::WalletEvent makeSyncProgressUpdatedEvent(uint32_t current, uint32_t total) {
-  CryptoNote::WalletEvent event;
-  event.type = CryptoNote::WalletEventType::SYNC_PROGRESS_UPDATED;
+Fortress::WalletEvent makeSyncProgressUpdatedEvent(uint32_t current, uint32_t total) {
+  Fortress::WalletEvent event;
+  event.type = Fortress::WalletEventType::SYNC_PROGRESS_UPDATED;
   event.synchronizationProgressUpdated.processedBlockCount = current;
   event.synchronizationProgressUpdated.totalBlockCount = total;
 
   return event;
 }
 
-CryptoNote::WalletEvent makeSyncCompletedEvent() {
-  CryptoNote::WalletEvent event;
-  event.type = CryptoNote::WalletEventType::SYNC_COMPLETED;
+Fortress::WalletEvent makeSyncCompletedEvent() {
+  Fortress::WalletEvent event;
+  event.type = Fortress::WalletEventType::SYNC_COMPLETED;
 
   return event;
 }
@@ -160,7 +160,7 @@ std::vector<WalletTransfer> convertOrdersToTransfers(const std::vector<WalletOrd
     WalletTransfer transfer;
 
     if (order.amount > static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
-      throw std::system_error(make_error_code(CryptoNote::error::WRONG_AMOUNT),
+      throw std::system_error(make_error_code(Fortress::error::WRONG_AMOUNT),
         "Order amount must not exceed " + std::to_string(std::numeric_limits<decltype(transfer.amount)>::max()));
     }
 
@@ -210,11 +210,11 @@ uint64_t pushDonationTransferIfPossible(const DonationSettings& donation, uint64
   return donationAmount;
 }
 
-CryptoNote::AccountPublicAddress parseAccountAddressString(const std::string& addressString, const CryptoNote::Currency& currency) {
-  CryptoNote::AccountPublicAddress address;
+Fortress::AccountPublicAddress parseAccountAddressString(const std::string& addressString, const Fortress::Currency& currency) {
+  Fortress::AccountPublicAddress address;
 
   if (!currency.parseAccountAddressString(addressString, address)) {
-    throw std::system_error(make_error_code(CryptoNote::error::BAD_ADDRESS));
+    throw std::system_error(make_error_code(Fortress::error::BAD_ADDRESS));
   }
 
   return address;
@@ -222,7 +222,7 @@ CryptoNote::AccountPublicAddress parseAccountAddressString(const std::string& ad
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 WalletGreen::WalletGreen(System::Dispatcher& dispatcher, const Currency& currency, INode& node, uint32_t transactionSoftLockTime) :
   m_dispatcher(dispatcher),
@@ -262,7 +262,7 @@ void WalletGreen::initialize(const std::string& password) {
 void WalletGreen::initializeWithViewKey(const Crypto::SecretKey& viewSecretKey, const std::string& password) {
   Crypto::PublicKey viewPublicKey;
   if (!Crypto::secret_key_to_public_key(viewSecretKey, viewPublicKey)) {
-    throw std::system_error(make_error_code(CryptoNote::error::KEY_GENERATION_ERROR));
+    throw std::system_error(make_error_code(Fortress::error::KEY_GENERATION_ERROR));
   }
 
   initWithKeys(viewPublicKey, viewSecretKey, password);
@@ -309,7 +309,7 @@ void WalletGreen::clearCaches() {
 
 void WalletGreen::initWithKeys(const Crypto::PublicKey& viewPublicKey, const Crypto::SecretKey& viewSecretKey, const std::string& password) {
   if (m_state != WalletState::NOT_INITIALIZED) {
-    throw std::system_error(make_error_code(CryptoNote::error::ALREADY_INITIALIZED));
+    throw std::system_error(make_error_code(Fortress::error::ALREADY_INITIALIZED));
   }
 
   throwIfStopped();
@@ -463,7 +463,7 @@ KeyPair WalletGreen::getAddressSpendKey(const std::string& address) const {
   throwIfNotInitialized();
   throwIfStopped();
 
-  CryptoNote::AccountPublicAddress pubAddr = parseAddress(address);
+  Fortress::AccountPublicAddress pubAddr = parseAddress(address);
 
   auto it = m_walletsContainer.get<KeysIndex>().find(pubAddr.spendPublicKey);
   if (it == m_walletsContainer.get<KeysIndex>().end()) {
@@ -491,7 +491,7 @@ std::string WalletGreen::createAddress() {
 std::string WalletGreen::createAddress(const Crypto::SecretKey& spendSecretKey) {
   Crypto::PublicKey spendPublicKey;
   if (!Crypto::secret_key_to_public_key(spendSecretKey, spendPublicKey) ) {
-    throw std::system_error(make_error_code(CryptoNote::error::KEY_GENERATION_ERROR));
+    throw std::system_error(make_error_code(Fortress::error::KEY_GENERATION_ERROR));
   }
 
   return doCreateAddress(spendPublicKey, spendSecretKey, 0);
@@ -583,7 +583,7 @@ void WalletGreen::deleteAddress(const std::string& address) {
   throwIfNotInitialized();
   throwIfStopped();
 
-  CryptoNote::AccountPublicAddress pubAddr = parseAddress(address);
+  Fortress::AccountPublicAddress pubAddr = parseAddress(address);
 
   auto it = m_walletsContainer.get<KeysIndex>().find(pubAddr.spendPublicKey);
   if (it == m_walletsContainer.get<KeysIndex>().end()) {
@@ -658,7 +658,7 @@ WalletTransaction WalletGreen::getTransaction(size_t transactionIndex) const {
   throwIfStopped();
 
   if (m_transactions.size() <= transactionIndex) {
-    throw std::system_error(make_error_code(CryptoNote::error::INDEX_OUT_OF_RANGE));
+    throw std::system_error(make_error_code(Fortress::error::INDEX_OUT_OF_RANGE));
   }
 
   return m_transactions.get<RandomAccessIndex>()[transactionIndex];
@@ -716,7 +716,7 @@ void WalletGreen::prepareTransaction(std::vector<WalletOuts>&& wallets,
   const std::string& extra,
   uint64_t unlockTimestamp,
   const DonationSettings& donation,
-  const CryptoNote::AccountPublicAddress& changeDestination,
+  const Fortress::AccountPublicAddress& changeDestination,
   PreparedTransaction& preparedTransaction) {
 
   preparedTransaction.destinations = convertOrdersToTransfers(orders);
@@ -729,7 +729,7 @@ void WalletGreen::prepareTransaction(std::vector<WalletOuts>&& wallets,
     throw std::system_error(make_error_code(error::WRONG_AMOUNT), "Not enough money");
   }
 
-  typedef CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount outs_for_amount;
+  typedef Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount outs_for_amount;
   std::vector<outs_for_amount> mixinResult;
 
   if (mixIn != 0) {
@@ -788,8 +788,8 @@ void WalletGreen::validateTransactionParameters(const TransactionParameters& tra
       throw std::system_error(make_error_code(error::CHANGE_ADDRESS_REQUIRED), "Set change destination address");
     }
   } else {
-    if (!CryptoNote::validateAddress(transactionParameters.changeDestination, m_currency)) {
-      throw std::system_error(make_error_code(CryptoNote::error::BAD_ADDRESS), "Wrong change address");
+    if (!Fortress::validateAddress(transactionParameters.changeDestination, m_currency)) {
+      throw std::system_error(make_error_code(Fortress::error::BAD_ADDRESS), "Wrong change address");
     }
 
     if (!isMyAddress(transactionParameters.changeDestination)) {
@@ -800,7 +800,7 @@ void WalletGreen::validateTransactionParameters(const TransactionParameters& tra
 
 size_t WalletGreen::doTransfer(const TransactionParameters& transactionParameters) {
   validateTransactionParameters(transactionParameters);
-  CryptoNote::AccountPublicAddress changeDestination = getChangeDestination(transactionParameters.changeDestination, transactionParameters.sourceAddresses);
+  Fortress::AccountPublicAddress changeDestination = getChangeDestination(transactionParameters.changeDestination, transactionParameters.sourceAddresses);
 
   std::vector<WalletOuts> wallets;
   if (!transactionParameters.sourceAddresses.empty()) {
@@ -835,7 +835,7 @@ size_t WalletGreen::makeTransaction(const TransactionParameters& sendingTransact
   System::EventLock lk(m_readyEvent);
 
   validateTransactionParameters(sendingTransaction);
-  CryptoNote::AccountPublicAddress changeDestination = getChangeDestination(sendingTransaction.changeDestination, sendingTransaction.sourceAddresses);
+  Fortress::AccountPublicAddress changeDestination = getChangeDestination(sendingTransaction.changeDestination, sendingTransaction.sourceAddresses);
 
   std::vector<WalletOuts> wallets;
   if (!sendingTransaction.sourceAddresses.empty()) {
@@ -867,7 +867,7 @@ void WalletGreen::commitTransaction(size_t transactionId) {
   throwIfTrackingMode();
 
   if (transactionId >= m_transactions.size()) {
-    throw std::system_error(make_error_code(CryptoNote::error::INDEX_OUT_OF_RANGE));
+    throw std::system_error(make_error_code(Fortress::error::INDEX_OUT_OF_RANGE));
   }
 
   auto txIt = std::next(m_transactions.get<RandomAccessIndex>().begin(), transactionId);
@@ -904,7 +904,7 @@ void WalletGreen::rollbackUncommitedTransaction(size_t transactionId) {
   throwIfTrackingMode();
 
   if (transactionId >= m_transactions.size()) {
-    throw std::system_error(make_error_code(CryptoNote::error::INDEX_OUT_OF_RANGE));
+    throw std::system_error(make_error_code(Fortress::error::INDEX_OUT_OF_RANGE));
   }
 
   auto txIt = m_transactions.get<RandomAccessIndex>().begin();
@@ -934,7 +934,7 @@ size_t WalletGreen::insertOutgoingTransactionAndPushEvent(const Hash& transactio
   insertTx.state = WalletTransactionState::CREATED;
   insertTx.creationTime = static_cast<uint64_t>(time(nullptr));
   insertTx.unlockTime = unlockTimestamp;
-  insertTx.blockHeight = CryptoNote::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT;
+  insertTx.blockHeight = Fortress::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT;
   insertTx.extra.assign(reinterpret_cast<const char*>(extra.data()), extra.size());
   insertTx.fee = fee;
   insertTx.hash = transactionHash;
@@ -962,7 +962,7 @@ void WalletGreen::updateTransactionStateAndPushEvent(size_t transactionId, Walle
   }
 }
 
-bool WalletGreen::updateWalletTransactionInfo(size_t transactionId, const CryptoNote::TransactionInformation& info, int64_t totalAmount) {
+bool WalletGreen::updateWalletTransactionInfo(size_t transactionId, const Fortress::TransactionInformation& info, int64_t totalAmount) {
   auto& txIdIndex = m_transactions.get<RandomAccessIndex>();
   assert(transactionId < txIdIndex.size());
   auto it = std::next(txIdIndex.begin(), transactionId);
@@ -1234,7 +1234,7 @@ bool WalletGreen::eraseForeignTransfers(size_t transactionId, size_t firstTransf
   });
 }
 
-std::unique_ptr<CryptoNote::ITransaction> WalletGreen::makeTransaction(const std::vector<ReceiverAmounts>& decomposedOutputs,
+std::unique_ptr<Fortress::ITransaction> WalletGreen::makeTransaction(const std::vector<ReceiverAmounts>& decomposedOutputs,
   std::vector<InputInfo>& keysInfo, const std::string& extra, uint64_t unlockTimestamp) {
 
   std::unique_ptr<ITransaction> tx = createTransaction();
@@ -1271,12 +1271,12 @@ std::unique_ptr<CryptoNote::ITransaction> WalletGreen::makeTransaction(const std
   return tx;
 }
 
-void WalletGreen::sendTransaction(const CryptoNote::Transaction& cryptoNoteTransaction) {
+void WalletGreen::sendTransaction(const Fortress::Transaction& FortressTransaction) {
   System::Event completion(m_dispatcher);
   std::error_code ec;
 
   throwIfStopped();
-  m_node.relayTransaction(cryptoNoteTransaction, [&ec, &completion, this](std::error_code error) {
+  m_node.relayTransaction(FortressTransaction, [&ec, &completion, this](std::error_code error) {
     ec = error;
     this->m_dispatcher.remoteSpawn(std::bind(asyncRequestCompletion, std::ref(completion)));
   });
@@ -1294,8 +1294,8 @@ size_t WalletGreen::validateSaveAndSendTransaction(const ITransactionReader& tra
     throw std::system_error(make_error_code(error::TRANSACTION_SIZE_TOO_BIG));
   }
 
-  CryptoNote::Transaction cryptoNoteTransaction;
-  if (!fromBinaryArray(cryptoNoteTransaction, transactionData)) {
+  Fortress::Transaction FortressTransaction;
+  if (!fromBinaryArray(FortressTransaction, transactionData)) {
     throw std::system_error(make_error_code(error::INTERNAL_WALLET_ERROR), "Failed to deserialize created transaction");
   }
 
@@ -1319,11 +1319,11 @@ size_t WalletGreen::validateSaveAndSendTransaction(const ITransactionReader& tra
   });
 
   if (send) {
-    sendTransaction(cryptoNoteTransaction);
+    sendTransaction(FortressTransaction);
     updateTransactionStateAndPushEvent(transactionId, WalletTransactionState::SUCCEEDED);
   } else {
     assert(m_uncommitedTransactions.count(transactionId) == 0);
-    m_uncommitedTransactions.emplace(transactionId, std::move(cryptoNoteTransaction));
+    m_uncommitedTransactions.emplace(transactionId, std::move(FortressTransaction));
   }
 
   rollbackAddingUnconfirmedTransaction.cancel();
@@ -1345,7 +1345,7 @@ AccountKeys WalletGreen::makeAccountKeys(const WalletRecord& wallet) const {
 void WalletGreen::requestMixinOuts(
   const std::vector<OutputToTransfer>& selectedTransfers,
   uint64_t mixIn,
-  std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult) {
+  std::vector<Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult) {
 
   std::vector<uint64_t> amounts;
   for (const auto& out: selectedTransfers) {
@@ -1475,9 +1475,9 @@ std::vector<WalletGreen::WalletOuts> WalletGreen::pickWallets(const std::vector<
   return wallets;
 }
 
-std::vector<CryptoNote::WalletGreen::ReceiverAmounts> WalletGreen::splitDestinations(const std::vector<CryptoNote::WalletTransfer>& destinations,
+std::vector<Fortress::WalletGreen::ReceiverAmounts> WalletGreen::splitDestinations(const std::vector<Fortress::WalletTransfer>& destinations,
   uint64_t dustThreshold,
-  const CryptoNote::Currency& currency) {
+  const Fortress::Currency& currency) {
 
   std::vector<ReceiverAmounts> decomposedOutputs;
   for (const auto& destination: destinations) {
@@ -1489,7 +1489,7 @@ std::vector<CryptoNote::WalletGreen::ReceiverAmounts> WalletGreen::splitDestinat
   return decomposedOutputs;
 }
 
-CryptoNote::WalletGreen::ReceiverAmounts WalletGreen::splitAmount(
+Fortress::WalletGreen::ReceiverAmounts WalletGreen::splitAmount(
   uint64_t amount,
   const AccountPublicAddress& destination,
   uint64_t dustThreshold) {
@@ -1503,11 +1503,11 @@ CryptoNote::WalletGreen::ReceiverAmounts WalletGreen::splitAmount(
 
 void WalletGreen::prepareInputs(
   const std::vector<OutputToTransfer>& selectedTransfers,
-  std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult,
+  std::vector<Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& mixinResult,
   uint64_t mixIn,
   std::vector<InputInfo>& keysInfo) {
 
-  typedef CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::out_entry out_entry;
+  typedef Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::out_entry out_entry;
 
   size_t i = 0;
   for (const auto& input: selectedTransfers) {
@@ -1684,7 +1684,7 @@ WalletEvent WalletGreen::getEvent() {
 
 void WalletGreen::throwIfNotInitialized() const {
   if (m_state != WalletState::INITIALIZED) {
-    throw std::system_error(make_error_code(CryptoNote::error::NOT_INITIALIZED));
+    throw std::system_error(make_error_code(Fortress::error::NOT_INITIALIZED));
   }
 }
 
@@ -1837,7 +1837,7 @@ void WalletGreen::transactionUpdated(const TransactionInformation& transactionIn
     m_fusionTxsCache.emplace(transactionId, isFusionTransaction(*it));
   }
 
-  if (transactionInfo.blockHeight != CryptoNote::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT) {
+  if (transactionInfo.blockHeight != Fortress::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT) {
     // In some cases a transaction can be included to a block but not removed from m_uncommitedTransactions. Fix it
     m_uncommitedTransactions.erase(transactionId);
   }
@@ -1846,7 +1846,7 @@ void WalletGreen::transactionUpdated(const TransactionInformation& transactionIn
   for (auto containerAmounts : containerAmountsList) {
     updateBalance(containerAmounts.container);
 
-    if (transactionInfo.blockHeight != CryptoNote::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT) {
+    if (transactionInfo.blockHeight != Fortress::WALLET_UNCONFIRMED_TRANSACTION_HEIGHT) {
       uint32_t unlockHeight = std::max(transactionInfo.blockHeight + m_transactionSoftLockTime, static_cast<uint32_t>(transactionInfo.unlockTime));
       insertUnlockTransactionJob(transactionInfo.transactionHash, unlockHeight, containerAmounts.container);
     }
@@ -1897,12 +1897,12 @@ void WalletGreen::transactionDeleted(ITransfersSubscription* object, const Hash&
     return;
   }
 
-  CryptoNote::ITransfersContainer* container = &object->getContainer();
+  Fortress::ITransfersContainer* container = &object->getContainer();
   updateBalance(container);
   deleteUnlockTransactionJob(transactionHash);
 
   bool updated = false;
-  m_transactions.get<TransactionIndex>().modify(it, [&updated](CryptoNote::WalletTransaction& tx) {
+  m_transactions.get<TransactionIndex>().modify(it, [&updated](Fortress::WalletTransaction& tx) {
     if (tx.state == WalletTransactionState::CREATED || tx.state == WalletTransactionState::SUCCEEDED) {
       tx.state = WalletTransactionState::CANCELLED;
       updated = true;
@@ -1920,7 +1920,7 @@ void WalletGreen::transactionDeleted(ITransfersSubscription* object, const Hash&
   }
 }
 
-void WalletGreen::insertUnlockTransactionJob(const Hash& transactionHash, uint32_t blockHeight, CryptoNote::ITransfersContainer* container) {
+void WalletGreen::insertUnlockTransactionJob(const Hash& transactionHash, uint32_t blockHeight, Fortress::ITransfersContainer* container) {
   auto& index = m_unlockTransactionsJob.get<BlockHeightIndex>();
   index.insert( { blockHeight, container, transactionHash } );
 }
@@ -1963,7 +1963,7 @@ void WalletGreen::removeUnconfirmedTransaction(const Crypto::Hash& transactionHa
   context.get();
 }
 
-void WalletGreen::updateBalance(CryptoNote::ITransfersContainer* container) {
+void WalletGreen::updateBalance(Fortress::ITransfersContainer* container) {
   auto it = m_walletsContainer.get<TransfersContainerIndex>().find(container);
 
   if (it == m_walletsContainer.get<TransfersContainerIndex>().end()) {
@@ -2001,11 +2001,11 @@ const WalletRecord& WalletGreen::getWalletRecord(const PublicKey& key) const {
 }
 
 const WalletRecord& WalletGreen::getWalletRecord(const std::string& address) const {
-  CryptoNote::AccountPublicAddress pubAddr = parseAddress(address);
+  Fortress::AccountPublicAddress pubAddr = parseAddress(address);
   return getWalletRecord(pubAddr.spendPublicKey);
 }
 
-const WalletRecord& WalletGreen::getWalletRecord(CryptoNote::ITransfersContainer* container) const {
+const WalletRecord& WalletGreen::getWalletRecord(Fortress::ITransfersContainer* container) const {
   auto it = m_walletsContainer.get<TransfersContainerIndex>().find(container);
   if (it == m_walletsContainer.get<TransfersContainerIndex>().end()) {
     throw std::system_error(make_error_code(error::WALLET_NOT_FOUND));
@@ -2014,8 +2014,8 @@ const WalletRecord& WalletGreen::getWalletRecord(CryptoNote::ITransfersContainer
   return *it;
 }
 
-CryptoNote::AccountPublicAddress WalletGreen::parseAddress(const std::string& address) const {
-  CryptoNote::AccountPublicAddress pubAddr;
+Fortress::AccountPublicAddress WalletGreen::parseAddress(const std::string& address) const {
+  Fortress::AccountPublicAddress pubAddr;
 
   if (!m_currency.parseAccountAddressString(address, pubAddr)) {
     throw std::system_error(make_error_code(error::BAD_ADDRESS));
@@ -2077,7 +2077,7 @@ size_t WalletGreen::createFusionTransaction(uint64_t threshold, uint64_t mixin) 
     return WALLET_INVALID_TRANSACTION_ID;
   }
 
-  typedef CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount outs_for_amount;
+  typedef Fortress::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount outs_for_amount;
   std::vector<outs_for_amount> mixinResult;
   if (mixin != 0) {
     requestMixinOuts(fusionInputs, mixin, mixinResult);
@@ -2136,7 +2136,7 @@ bool WalletGreen::isFusionTransaction(size_t transactionId) const {
   throwIfStopped();
 
   if (m_transactions.size() <= transactionId) {
-    throw std::system_error(make_error_code(CryptoNote::error::INDEX_OUT_OF_RANGE));
+    throw std::system_error(make_error_code(Fortress::error::INDEX_OUT_OF_RANGE));
   }
 
   auto isFusionIter = m_fusionTxsCache.find(transactionId);
@@ -2380,7 +2380,7 @@ void WalletGreen::getViewKeyKnownBlocks(const Crypto::PublicKey& viewPublicKey) 
 
 ///pre: changeDestinationAddress belongs to current container
 ///pre: source address belongs to current container
-CryptoNote::AccountPublicAddress WalletGreen::getChangeDestination(const std::string& changeDestinationAddress, const std::vector<std::string>& sourceAddresses) const {
+Fortress::AccountPublicAddress WalletGreen::getChangeDestination(const std::string& changeDestinationAddress, const std::vector<std::string>& sourceAddresses) const {
   if (!changeDestinationAddress.empty()) {
     return parseAccountAddressString(changeDestinationAddress, m_currency);
   }
@@ -2394,7 +2394,7 @@ CryptoNote::AccountPublicAddress WalletGreen::getChangeDestination(const std::st
 }
 
 bool WalletGreen::isMyAddress(const std::string& addressString) const {
-  CryptoNote::AccountPublicAddress address = parseAccountAddressString(addressString, m_currency);
+  Fortress::AccountPublicAddress address = parseAccountAddressString(addressString, m_currency);
   return m_viewPublicKey == address.viewPublicKey && m_walletsContainer.get<KeysIndex>().count(address.spendPublicKey) != 0;
 }
 
@@ -2487,4 +2487,4 @@ void WalletGreen::deleteFromUncommitedTransactions(const std::vector<size_t>& de
   }
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

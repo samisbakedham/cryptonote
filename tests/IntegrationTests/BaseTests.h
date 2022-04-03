@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 
 #include <Logging/ConsoleLogger.h>
 #include <System/Dispatcher.h>
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/Currency.h"
 
 #include "../IntegrationTestLib/TestNetwork.h"
 
@@ -19,7 +19,7 @@ class BaseTest : public testing::Test {
 public:
 
   BaseTest() :
-    currency(CryptoNote::CurrencyBuilder(logger).testnet(true).currency()),
+    currency(Fortress::CurrencyBuilder(logger).testnet(true).currency()),
     network(dispatcher, currency) {
   }
 
@@ -35,7 +35,7 @@ protected:
 
   System::Dispatcher dispatcher;
   Logging::ConsoleLogger logger;
-  CryptoNote::Currency currency;
+  Fortress::Currency currency;
   TestNetwork network;
 };
 

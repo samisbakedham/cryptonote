@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "Globals.h"
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/TransactionApi.h"
 
 #include "Transfers/TransfersSynchronizer.h"
 #include "Transfers/BlockchainSynchronizer.h"
@@ -18,7 +18,7 @@
 
 #include "../IntegrationTestLib/TestWalletLegacy.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Crypto;
 using namespace Tests::Common;
 
@@ -194,7 +194,7 @@ public:
     m_sync(sync) {}
 
   void generateAccounts(size_t count) {
-    CryptoNote::AccountBase acc;
+    Fortress::AccountBase acc;
 
     while (count--) {
       acc.generate();
@@ -292,13 +292,13 @@ TEST_F(TransfersTest, base) {
 
   launchTestnet(2);
 
-  std::unique_ptr<CryptoNote::INode> node1;
-  std::unique_ptr<CryptoNote::INode> node2;
+  std::unique_ptr<Fortress::INode> node1;
+  std::unique_ptr<Fortress::INode> node2;
 
   nodeDaemons[0]->makeINode(node1);
   nodeDaemons[1]->makeINode(node2);
 
-  CryptoNote::AccountBase dstAcc;
+  Fortress::AccountBase dstAcc;
   dstAcc.generate();
 
   AccountKeys dstKeys = reinterpret_cast<const AccountKeys&>(dstAcc.getAccountKeys());
@@ -407,7 +407,7 @@ std::unique_ptr<ITransaction> createTransferToMultisignature(
 std::error_code submitTransaction(INode& node, ITransactionReader& tx) {
   auto data = tx.getTransactionData();
 
-  CryptoNote::Transaction outTx;
+  Fortress::Transaction outTx;
   fromBinaryArray(outTx, data);
 
 
@@ -464,8 +464,8 @@ std::unique_ptr<ITransaction> createTransferFromMultisignature(
 
 TEST_F(MultisignatureTest, createMulitisignatureTransaction) {
 
-  std::unique_ptr<CryptoNote::INode> node1;
-  std::unique_ptr<CryptoNote::INode> node2;
+  std::unique_ptr<Fortress::INode> node1;
+  std::unique_ptr<Fortress::INode> node2;
 
   nodeDaemons[0]->makeINode(node1);
   nodeDaemons[1]->makeINode(node2);

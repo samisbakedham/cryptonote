@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #include <thread>
 
 #include "Common/StringTools.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/FortressTools.h"
 #include "NodeRpcProxy/NodeRpcProxy.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 #include "Rpc/HttpClient.h"
@@ -18,7 +18,7 @@
 #include "Logger.h"
 #include "NodeCallback.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace System;
 
 namespace Tests {
@@ -48,7 +48,7 @@ bool RPCTestNode::startMining(size_t threadsCount, const std::string& address) {
   return true;
 }
 
-bool RPCTestNode::getBlockTemplate(const std::string& minerAddress, CryptoNote::Block& blockTemplate, uint64_t& difficulty) {
+bool RPCTestNode::getBlockTemplate(const std::string& minerAddress, Fortress::Block& blockTemplate, uint64_t& difficulty) {
   LOG_DEBUG("getBlockTemplate()");
 
   try {
@@ -131,8 +131,8 @@ bool RPCTestNode::getTailBlockId(Crypto::Hash& tailBlockId) {
   return true;
 }
 
-bool RPCTestNode::makeINode(std::unique_ptr<CryptoNote::INode>& node) {
-  std::unique_ptr<CryptoNote::INode> newNode(new CryptoNote::NodeRpcProxy("127.0.0.1", m_rpcPort));
+bool RPCTestNode::makeINode(std::unique_ptr<Fortress::INode>& node) {
+  std::unique_ptr<Fortress::INode> newNode(new Fortress::NodeRpcProxy("127.0.0.1", m_rpcPort));
   NodeCallback cb;
   newNode->init(cb.callback());
   auto ec = cb.get();
@@ -166,8 +166,8 @@ bool RPCTestNode::stopDaemon() {
 
 uint64_t RPCTestNode::getLocalHeight() {
   try {
-    CryptoNote::COMMAND_RPC_GET_INFO::request req;
-    CryptoNote::COMMAND_RPC_GET_INFO::response rsp;
+    Fortress::COMMAND_RPC_GET_INFO::request req;
+    Fortress::COMMAND_RPC_GET_INFO::response rsp;
     invokeJsonCommand(m_httpClient, "/getinfo", req, rsp);
     if (rsp.status == CORE_RPC_STATUS_OK) {
       return rsp.height;

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,13 +10,13 @@
 #include <unordered_set>
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "FortressCore/FortressBasic.h"
 
 #include "IObservable.h"
 #include "IStreamSerializable.h"
 #include "ITransfersSynchronizer.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 struct CompleteBlock;
 

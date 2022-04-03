@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,19 +10,19 @@
 
 #include "EventWaiter.h"
 #include "ICoreStub.h"
-#include "ICryptoNoteProtocolQueryStub.h"
+#include "IFortressProtocolQueryStub.h"
 #include "INodeStubs.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/TransactionApi.h"
 #include "TestBlockchainGenerator.h"
 
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/FortressTools.h"
 
 #include "Logging/FileLogger.h"
 
 #include "BlockchainExplorer/BlockchainExplorer.h"
 
 using namespace Crypto;
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace {
 Transaction createTx(ITransactionReader& tx) {
@@ -662,7 +662,7 @@ TEST_F(BlockchainExplorerTests, getPoolStateNotInited) {
 }
 
 TEST_F(BlockchainExplorerTests, getRewardBlocksWindow) {
-  ASSERT_EQ(blockchainExplorer.getRewardBlocksWindow(), parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
+  ASSERT_EQ(blockchainExplorer.getRewardBlocksWindow(), parameters::Fortress_REWARD_BLOCKS_WINDOW);
 }
 
 TEST_F(BlockchainExplorerTests, getRewardBlocksWindowNotInited) {
@@ -671,8 +671,8 @@ TEST_F(BlockchainExplorerTests, getRewardBlocksWindowNotInited) {
 }
 
 TEST_F(BlockchainExplorerTests, getFullRewardMaxBlockSize) {
-  ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(1), parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE);
-  ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(2), parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE);
+  ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(1), parameters::Fortress_BLOCK_GRANTED_FULL_REWARD_ZONE);
+  ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(2), parameters::Fortress_BLOCK_GRANTED_FULL_REWARD_ZONE);
 }
 
 TEST_F(BlockchainExplorerTests, getFullRewardMaxBlockSizeNotInited) {

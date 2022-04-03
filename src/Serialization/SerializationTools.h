@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,7 +29,7 @@ inline uint64_t getValueAs<uint64_t>(const JsonValue& js) { return static_cast<u
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 template <typename T>
 Common::JsonValue storeToJsonValue(const T& v) {

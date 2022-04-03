@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@
 
 using namespace Logging;
 
-namespace CryptoNote {
+namespace Fortress {
 
 HttpServer::HttpServer(System::Dispatcher& dispatcher, Logging::ILogger& log)
   : m_dispatcher(dispatcher), workingContextGroup(dispatcher), logger(log, "HttpServer") {

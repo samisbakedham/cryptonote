@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +6,7 @@
 #include "IWalletLegacy.h"
 #include "Common/StdInputStream.h"
 #include "Common/StdOutputStream.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "FortressCore/FortressFormatUtils.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/SerializationOverloads.h"
@@ -14,9 +14,9 @@
 using namespace Common;
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace Fortress {
 
-void serialize(TransactionInformation& ti, CryptoNote::ISerializer& s) {
+void serialize(TransactionInformation& ti, Fortress::ISerializer& s) {
   s(ti.transactionHash, "");
   s(ti.publicKey, "");
   serializeBlockHeight(s, ti.blockHeight, "");
@@ -760,7 +760,7 @@ std::vector<TransactionSpentOutputInformation> TransfersContainer::getSpentOutpu
 void TransfersContainer::save(std::ostream& os) {
   std::lock_guard<std::mutex> lk(m_mutex);
   StdOutputStream stream(os);
-  CryptoNote::BinaryOutputStreamSerializer s(stream);
+  Fortress::BinaryOutputStreamSerializer s(stream);
 
   s(const_cast<uint32_t&>(TRANSFERS_CONTAINER_STORAGE_VERSION), "version");
 
@@ -774,7 +774,7 @@ void TransfersContainer::save(std::ostream& os) {
 void TransfersContainer::load(std::istream& in) {
   std::lock_guard<std::mutex> lk(m_mutex);
   StdInputStream stream(in);
-  CryptoNote::BinaryInputStreamSerializer s(stream);
+  Fortress::BinaryInputStreamSerializer s(stream);
 
   uint32_t version = 0;
   s(version, "version");

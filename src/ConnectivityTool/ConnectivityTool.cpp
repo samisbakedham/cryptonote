@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,7 +27,7 @@
 #include "version.h"
 
 namespace po = boost::program_options;
-using namespace CryptoNote;
+using namespace Fortress;
 
 #ifndef ENDL
 #define ENDL std::endl
@@ -182,8 +182,8 @@ bool handle_get_daemon_info(po::variables_map& vm) {
     System::Dispatcher dispatcher;
     HttpClient httpClient(dispatcher, command_line::get_arg(vm, arg_ip), command_line::get_arg(vm, arg_rpc_port));
 
-    CryptoNote::COMMAND_RPC_GET_INFO::request req;
-    CryptoNote::COMMAND_RPC_GET_INFO::response res;
+    Fortress::COMMAND_RPC_GET_INFO::request req;
+    Fortress::COMMAND_RPC_GET_INFO::response res;
 
     invokeJsonCommand(httpClient, "/getinfo", req, res); // TODO: timeout
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -65,13 +65,13 @@ Crypto::Hash BlockchainMonitor::requestLastBlockHash() {
   m_logger(Logging::DEBUGGING) << "Requesting last block hash";
 
   try {
-    CryptoNote::HttpClient client(m_dispatcher, m_daemonHost, m_daemonPort);
+    Fortress::HttpClient client(m_dispatcher, m_daemonHost, m_daemonPort);
 
-    CryptoNote::COMMAND_RPC_GET_LAST_BLOCK_HEADER::request request;
-    CryptoNote::COMMAND_RPC_GET_LAST_BLOCK_HEADER::response response;
+    Fortress::COMMAND_RPC_GET_LAST_BLOCK_HEADER::request request;
+    Fortress::COMMAND_RPC_GET_LAST_BLOCK_HEADER::response response;
 
     System::EventLock lk(m_httpEvent);
-    CryptoNote::JsonRpc::invokeJsonRpcCommand(client, "getlastblockheader", request, response);
+    Fortress::JsonRpc::invokeJsonRpcCommand(client, "getlastblockheader", request, response);
 
     if (response.status != CORE_RPC_STATUS_OK) {
       throw std::runtime_error("Core responded with wrong status: " + response.status);

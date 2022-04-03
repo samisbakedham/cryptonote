@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,15 +10,15 @@
 #include <Logging/LoggerRef.h>
 #include "CoreRpcServerCommandsDefinitions.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 class core;
 class NodeServer;
-class ICryptoNoteProtocolQuery;
+class IFortressProtocolQuery;
 
 class RpcServer : public HttpServer {
 public:
-  RpcServer(System::Dispatcher& dispatcher, Logging::ILogger& log, core& c, NodeServer& p2p, const ICryptoNoteProtocolQuery& protocolQuery);
+  RpcServer(System::Dispatcher& dispatcher, Logging::ILogger& log, core& c, NodeServer& p2p, const IFortressProtocolQuery& protocolQuery);
 
   typedef std::function<bool(RpcServer*, const HttpRequest& request, HttpResponse& response)> HandlerFunction;
 
@@ -70,7 +70,7 @@ private:
   Logging::LoggerRef logger;
   core& m_core;
   NodeServer& m_p2p;
-  const ICryptoNoteProtocolQuery& m_protocolQuery;
+  const IFortressProtocolQuery& m_protocolQuery;
 };
 
 }

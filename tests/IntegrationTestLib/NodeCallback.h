@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@ namespace Tests {
 
 class NodeCallback {
 public:
-  CryptoNote::INode::Callback callback() {
+  Fortress::INode::Callback callback() {
     prom = std::promise<std::error_code>(); // reset std::promise
     result = prom.get_future();
     return [this](std::error_code ec) {

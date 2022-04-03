@@ -1,17 +1,17 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "WalletUnconfirmedTransactions.h"
 #include "WalletLegacy/WalletLegacySerialization.h"
 
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/FortressTools.h"
 #include "Serialization/ISerializer.h"
 #include "Serialization/SerializationOverloads.h"
 
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace Fortress {
 
 inline TransactionOutputId getOutputId(const TransactionOutputInformation& out) {
   return std::make_pair(out.transactionPublicKey, out.outputInTransaction);
@@ -140,4 +140,4 @@ std::vector<TransactionId> WalletUnconfirmedTransactions::deleteOutdatedTransact
   return deletedTransactions;
 }
 
-} /* namespace CryptoNote */
+} /* namespace Fortress */

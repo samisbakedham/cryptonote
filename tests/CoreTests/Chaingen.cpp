@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,31 +13,31 @@
 #include <boost/program_options.hpp>
 
 #include "Common/CommandLine.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/Core.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/FortressBasic.h"
+#include "FortressCore/FortressBasicImpl.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/Core.h"
+#include "FortressCore/Currency.h"
 
 //#include "AccountBoostSerialization.h"
-//#include "cryptonote_boost_serialization.h"
+//#include "Fortress_boost_serialization.h"
 
 using namespace std;
-using namespace CryptoNote;
+using namespace Fortress;
 
 struct output_index {
-    const CryptoNote::TransactionOutputTarget out;
+    const Fortress::TransactionOutputTarget out;
     uint64_t amount;
     size_t blk_height; // block height
     size_t tx_no; // index of transaction in block
     size_t out_no; // index of out in transaction
     uint32_t idx;
     bool spent;
-    const CryptoNote::Block *p_blk;
-    const CryptoNote::Transaction *p_tx;
+    const Fortress::Block *p_blk;
+    const Fortress::Transaction *p_tx;
 
-    output_index(const CryptoNote::TransactionOutputTarget &_out, uint64_t _a, size_t _h, size_t tno, size_t ono, const CryptoNote::Block *_pb, const CryptoNote::Transaction *_pt)
+    output_index(const Fortress::TransactionOutputTarget &_out, uint64_t _a, size_t _h, size_t tno, size_t ono, const Fortress::Block *_pb, const Fortress::Transaction *_pt)
         : out(_out), amount(_a), blk_height(_h), tx_no(tno), out_no(ono), idx(0), spent(false), p_blk(_pb), p_tx(_pt) { }
 
     output_index(const output_index &other)
@@ -82,7 +82,7 @@ namespace
   }
 }
 
-bool init_output_indices(map_output_idx_t& outs, std::map<uint64_t, std::vector<size_t> >& outs_mine, const std::vector<CryptoNote::Block>& blockchain, const map_hash2tx_t& mtx, const CryptoNote::AccountBase& from) {
+bool init_output_indices(map_output_idx_t& outs, std::map<uint64_t, std::vector<size_t> >& outs_mine, const std::vector<Fortress::Block>& blockchain, const map_hash2tx_t& mtx, const Fortress::AccountBase& from) {
 
     BOOST_FOREACH (const Block& blk, blockchain) {
         vector<const Transaction*> vtx;
@@ -125,7 +125,7 @@ bool init_output_indices(map_output_idx_t& outs, std::map<uint64_t, std::vector<
     return true;
 }
 
-bool init_spent_output_indices(map_output_idx_t& outs, map_output_t& outs_mine, const std::vector<CryptoNote::Block>& blockchain, const map_hash2tx_t& mtx, const CryptoNote::AccountBase& from) {
+bool init_spent_output_indices(map_output_idx_t& outs, map_output_t& outs_mine, const std::vector<Fortress::Block>& blockchain, const map_hash2tx_t& mtx, const Fortress::AccountBase& from) {
 
     for (const map_output_t::value_type& o: outs_mine) {
         for (size_t i = 0; i < o.second.size(); ++i) {
@@ -191,12 +191,12 @@ bool fill_output_entries(std::vector<output_index>& out_indices, size_t sender_o
 }
 
 bool fill_tx_sources(std::vector<TransactionSourceEntry>& sources, const std::vector<test_event_entry>& events,
-                     const Block& blk_head, const CryptoNote::AccountBase& from, uint64_t amount, size_t nmix)
+                     const Block& blk_head, const Fortress::AccountBase& from, uint64_t amount, size_t nmix)
 {
     map_output_idx_t outs;
     map_output_t outs_mine;
 
-    std::vector<CryptoNote::Block> blockchain;
+    std::vector<Fortress::Block> blockchain;
     map_hash2tx_t mtx;
     if (!find_block_chain(events, blockchain, mtx, get_block_hash(blk_head)))
         return false;
@@ -219,7 +219,7 @@ bool fill_tx_sources(std::vector<TransactionSourceEntry>& sources, const std::ve
             if (oi.spent)
                 continue;
 
-            CryptoNote::TransactionSourceEntry ts;
+            Fortress::TransactionSourceEntry ts;
             ts.amount = oi.amount;
             ts.realOutputIndexInTransaction = oi.out_no;
             ts.realTransactionPublicKey = getTransactionPublicKeyFromExtra(oi.p_tx->extra); // incoming tx public key
@@ -242,14 +242,14 @@ bool fill_tx_sources(std::vector<TransactionSourceEntry>& sources, const std::ve
     return sources_found;
 }
 
-bool fill_tx_destination(TransactionDestinationEntry &de, const CryptoNote::AccountBase &to, uint64_t amount) {
+bool fill_tx_destination(TransactionDestinationEntry &de, const Fortress::AccountBase &to, uint64_t amount) {
     de.addr = to.getAccountKeys().address;
     de.amount = amount;
     return true;
 }
 
 void fill_tx_sources_and_destinations(const std::vector<test_event_entry>& events, const Block& blk_head,
-                                      const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to,
+                                      const Fortress::AccountBase& from, const Fortress::AccountBase& to,
                                       uint64_t amount, uint64_t fee, size_t nmix, std::vector<TransactionSourceEntry>& sources,
                                       std::vector<TransactionDestinationEntry>& destinations)
 {
@@ -274,8 +274,8 @@ void fill_tx_sources_and_destinations(const std::vector<test_event_entry>& event
   }
 }
 
-bool construct_tx_to_key(Logging::ILogger& logger, const std::vector<test_event_entry>& events, CryptoNote::Transaction& tx, const Block& blk_head,
-                         const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to, uint64_t amount,
+bool construct_tx_to_key(Logging::ILogger& logger, const std::vector<test_event_entry>& events, Fortress::Transaction& tx, const Block& blk_head,
+                         const Fortress::AccountBase& from, const Fortress::AccountBase& to, uint64_t amount,
                          uint64_t fee, size_t nmix)
 {
   vector<TransactionSourceEntry> sources;
@@ -294,7 +294,7 @@ Transaction construct_tx_with_fee(Logging::ILogger& logger, std::vector<test_eve
   return tx;
 }
 
-uint64_t get_balance(const CryptoNote::AccountBase& addr, const std::vector<CryptoNote::Block>& blockchain, const map_hash2tx_t& mtx) {
+uint64_t get_balance(const Fortress::AccountBase& addr, const std::vector<Fortress::Block>& blockchain, const map_hash2tx_t& mtx) {
     uint64_t res = 0;
     std::map<uint64_t, std::vector<output_index> > outs;
     std::map<uint64_t, std::vector<size_t> > outs_mine;
@@ -320,7 +320,7 @@ uint64_t get_balance(const CryptoNote::AccountBase& addr, const std::vector<Cryp
     return res;
 }
 
-void get_confirmed_txs(const std::vector<CryptoNote::Block>& blockchain, const map_hash2tx_t& mtx, map_hash2tx_t& confirmed_txs)
+void get_confirmed_txs(const std::vector<Fortress::Block>& blockchain, const map_hash2tx_t& mtx, map_hash2tx_t& confirmed_txs)
 {
   std::unordered_set<Crypto::Hash> confirmed_hashes;
   for (const Block& blk : blockchain)
@@ -340,7 +340,7 @@ void get_confirmed_txs(const std::vector<CryptoNote::Block>& blockchain, const m
   }
 }
 
-bool find_block_chain(const std::vector<test_event_entry>& events, std::vector<CryptoNote::Block>& blockchain, map_hash2tx_t& mtx, const Crypto::Hash& head) {
+bool find_block_chain(const std::vector<test_event_entry>& events, std::vector<Fortress::Block>& blockchain, map_hash2tx_t& mtx, const Crypto::Hash& head) {
     std::unordered_map<Crypto::Hash, const Block*> block_index;
     BOOST_FOREACH(const test_event_entry& ev, events)
     {
@@ -374,7 +374,7 @@ bool find_block_chain(const std::vector<test_event_entry>& events, std::vector<C
 }
 
 
-const CryptoNote::Currency& test_chain_unit_base::currency() const
+const Fortress::Currency& test_chain_unit_base::currency() const
 {
   return m_currency;
 }
@@ -384,7 +384,7 @@ void test_chain_unit_base::register_callback(const std::string& cb_name, verify_
   m_callbacks[cb_name] = cb;
 }
 
-bool test_chain_unit_base::verify(const std::string& cb_name, CryptoNote::core& c, size_t ev_index, const std::vector<test_event_entry> &events)
+bool test_chain_unit_base::verify(const std::string& cb_name, Fortress::core& c, size_t ev_index, const std::vector<test_event_entry> &events)
 {
   auto cb_it = m_callbacks.find(cb_name);
   if(cb_it == m_callbacks.end())

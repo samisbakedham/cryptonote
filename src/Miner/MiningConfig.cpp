@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,12 +12,12 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
-#include "CryptoNoteConfig.h"
+#include "FortressConfig.h"
 #include "Logging/ILogger.h"
 
 namespace po = boost::program_options;
 
-namespace CryptoNote {
+namespace Fortress {
 
 namespace {
 
@@ -53,7 +53,7 @@ void parseDaemonAddress(const std::string& daemonAddress, std::string& daemonHos
 MiningConfig::MiningConfig(): help(false) {
   cmdOptions.add_options()
       ("help,h", "produce this help message and exit")
-      ("address", po::value<std::string>(), "Valid cryptonote miner's address")
+      ("address", po::value<std::string>(), "Valid Fortress miner's address")
       ("daemon-host", po::value<std::string>()->default_value(DEFAULT_DAEMON_HOST), "Daemon host")
       ("daemon-rpc-port", po::value<uint16_t>()->default_value(static_cast<uint16_t>(RPC_DEFAULT_PORT)), "Daemon's RPC port")
       ("daemon-address", po::value<std::string>(), "Daemon host:port. If you use this option you must not use --daemon-host and --daemon-port options")

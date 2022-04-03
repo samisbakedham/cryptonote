@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 
 #include "NodeRpcProxy/NodeRpcProxy.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Logging;
 
 #undef ERROR
@@ -109,7 +109,7 @@ int main(int argc, const char** argv) {
     logger(ERROR) << "shutdown error";
   }
 
-  CryptoNote::Transaction tx;
+  Fortress::Transaction tx;
   nodeProxy.relayTransaction(tx, [&](std::error_code ec) {
     if (!ec) {
       logger(INFO) << "relayTransaction called successfully";

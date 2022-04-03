@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,15 +9,15 @@
 #include <System/Timer.h>
 
 #include "Common/StringTools.h"
-#include "CryptoNoteConfig.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/TransactionExtra.h"
+#include "FortressConfig.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/TransactionExtra.h"
 #include "Rpc/HttpClient.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 #include "Rpc/JsonRpc.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace Miner {
 
@@ -37,7 +37,7 @@ MinerEvent BlockchainUpdatedEvent() {
 
 }
 
-MinerManager::MinerManager(System::Dispatcher& dispatcher, const CryptoNote::MiningConfig& config, Logging::ILogger& logger) :
+MinerManager::MinerManager(System::Dispatcher& dispatcher, const Fortress::MiningConfig& config, Logging::ILogger& logger) :
   m_dispatcher(dispatcher),
   m_logger(logger, "MinerManager"),
   m_contextGroup(dispatcher),
@@ -145,7 +145,7 @@ void MinerManager::pushEvent(MinerEvent&& event) {
   m_eventOccurred.set();
 }
 
-void MinerManager::startMining(const CryptoNote::BlockMiningParameters& params) {
+void MinerManager::startMining(const Fortress::BlockMiningParameters& params) {
   m_contextGroup.spawn([this, params] () {
     try {
       m_minedBlock = m_miner.mine(params, m_config.threadCount);
@@ -230,7 +230,7 @@ BlockMiningParameters MinerManager::requestMiningParameters(System::Dispatcher& 
 }
 
 
-void MinerManager::adjustBlockTemplate(CryptoNote::Block& blockTemplate) const {
+void MinerManager::adjustBlockTemplate(Fortress::Block& blockTemplate) const {
   if (m_config.firstBlockTimestamp == 0) {
     //no need to fix timestamp
     return;

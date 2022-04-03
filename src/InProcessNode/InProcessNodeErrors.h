@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <system_error>
 
-namespace CryptoNote {
+namespace Fortress {
 namespace error {
 
 enum InProcessNodeErrorCodes {
@@ -49,8 +49,8 @@ private:
 };
 
 } //namespace error
-} //namespace CryptoNote
+} //namespace Fortress
 
-inline std::error_code make_error_code(CryptoNote::error::InProcessNodeErrorCodes e) {
-  return std::error_code(static_cast<int>(e), CryptoNote::error::InProcessNodeErrorCategory::INSTANCE);
+inline std::error_code make_error_code(Fortress::error::InProcessNodeErrorCodes e) {
+  return std::error_code(static_cast<int>(e), Fortress::error::InProcessNodeErrorCategory::INSTANCE);
 }

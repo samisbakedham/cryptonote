@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,14 +6,14 @@
 
 #include "Chaingen.h"
 
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/Currency.h"
 #include "TransactionBuilder.h"
 #include <Logging/LoggerGroup.h>
 
 class TestGenerator {
 public:
   TestGenerator(
-    const CryptoNote::Currency& currency, 
+    const Fortress::Currency& currency, 
     std::vector<test_event_entry>& eventsRef) :
       generator(currency),
       events(eventsRef) {
@@ -23,17 +23,17 @@ public:
     lastBlock = genesisBlock;
   }
 
-  const CryptoNote::Currency& currency() const { return generator.currency(); }
+  const Fortress::Currency& currency() const { return generator.currency(); }
 
-  void makeNextBlock(const std::list<CryptoNote::Transaction>& txs = std::list<CryptoNote::Transaction>()) {
-    CryptoNote::Block block;
+  void makeNextBlock(const std::list<Fortress::Transaction>& txs = std::list<Fortress::Transaction>()) {
+    Fortress::Block block;
     generator.constructBlock(block, lastBlock, minerAccount, txs);
     events.push_back(block);
     lastBlock = block;
   }
 
-  void makeNextBlock(const CryptoNote::Transaction& tx) {
-    std::list<CryptoNote::Transaction> txs;
+  void makeNextBlock(const Fortress::Transaction& tx) {
+    std::list<Fortress::Transaction> txs;
     txs.push_back(tx);
     makeNextBlock(txs);
   }
@@ -42,19 +42,19 @@ public:
     generateBlocks(currency().minedMoneyUnlockWindow());
   }
 
-  void generateBlocks(size_t count, uint8_t majorVersion = CryptoNote::BLOCK_MAJOR_VERSION_1) {
+  void generateBlocks(size_t count, uint8_t majorVersion = Fortress::BLOCK_MAJOR_VERSION_1) {
     while (count--) {
-      CryptoNote::Block next;
+      Fortress::Block next;
       generator.constructBlockManually(next, lastBlock, minerAccount, test_generator::bf_major_ver, majorVersion);
       lastBlock = next;
       events.push_back(next);
     }
   }
 
-  TransactionBuilder createTxBuilder(const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to, uint64_t amount, uint64_t fee) {
+  TransactionBuilder createTxBuilder(const Fortress::AccountBase& from, const Fortress::AccountBase& to, uint64_t amount, uint64_t fee) {
 
-    std::vector<CryptoNote::TransactionSourceEntry> sources;
-    std::vector<CryptoNote::TransactionDestinationEntry> destinations;
+    std::vector<Fortress::TransactionSourceEntry> sources;
+    std::vector<Fortress::TransactionDestinationEntry> destinations;
 
     fillTxSourcesAndDestinations(sources, destinations, from, to, amount, fee);
 
@@ -67,16 +67,16 @@ public:
   }
 
   void fillTxSourcesAndDestinations(
-    std::vector<CryptoNote::TransactionSourceEntry>& sources, 
-    std::vector<CryptoNote::TransactionDestinationEntry>& destinations,
-    const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to, uint64_t amount, uint64_t fee, size_t nmix = 0) {
+    std::vector<Fortress::TransactionSourceEntry>& sources, 
+    std::vector<Fortress::TransactionDestinationEntry>& destinations,
+    const Fortress::AccountBase& from, const Fortress::AccountBase& to, uint64_t amount, uint64_t fee, size_t nmix = 0) {
     fill_tx_sources_and_destinations(events, lastBlock, from, to, amount, fee, nmix, sources, destinations);
   }
 
   void constructTxToKey(
-    CryptoNote::Transaction& tx,
-    const CryptoNote::AccountBase& from,
-    const CryptoNote::AccountBase& to,
+    Fortress::Transaction& tx,
+    const Fortress::AccountBase& from,
+    const Fortress::AccountBase& to,
     uint64_t amount,
     uint64_t fee,
     size_t nmix = 0) {
@@ -103,8 +103,8 @@ public:
 
   Logging::LoggerGroup logger;
   test_generator generator;
-  CryptoNote::Block genesisBlock;
-  CryptoNote::Block lastBlock;
-  CryptoNote::AccountBase minerAccount;
+  Fortress::Block genesisBlock;
+  Fortress::Block lastBlock;
+  Fortress::AccountBase minerAccount;
   std::vector<test_event_entry>& events;
 };

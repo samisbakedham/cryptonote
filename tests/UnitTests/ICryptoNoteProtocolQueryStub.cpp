@@ -1,37 +1,37 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "ICryptoNoteProtocolQueryStub.h"
+#include "IFortressProtocolQueryStub.h"
 
-bool ICryptoNoteProtocolQueryStub::addObserver(CryptoNote::ICryptoNoteProtocolObserver* observer) {
+bool IFortressProtocolQueryStub::addObserver(Fortress::IFortressProtocolObserver* observer) {
   return false;
 }
 
-bool ICryptoNoteProtocolQueryStub::removeObserver(CryptoNote::ICryptoNoteProtocolObserver* observer) {
+bool IFortressProtocolQueryStub::removeObserver(Fortress::IFortressProtocolObserver* observer) {
   return false;
 }
 
-uint32_t ICryptoNoteProtocolQueryStub::getObservedHeight() const {
+uint32_t IFortressProtocolQueryStub::getObservedHeight() const {
   return observedHeight;
 }
 
-size_t ICryptoNoteProtocolQueryStub::getPeerCount() const {
+size_t IFortressProtocolQueryStub::getPeerCount() const {
   return peers;
 }
 
-bool ICryptoNoteProtocolQueryStub::isSynchronized() const {
+bool IFortressProtocolQueryStub::isSynchronized() const {
   return synchronized;
 }
 
-void ICryptoNoteProtocolQueryStub::setPeerCount(uint32_t count) {
+void IFortressProtocolQueryStub::setPeerCount(uint32_t count) {
   peers = count;
 }
 
-void ICryptoNoteProtocolQueryStub::setObservedHeight(uint32_t height) {
+void IFortressProtocolQueryStub::setObservedHeight(uint32_t height) {
   observedHeight = height;
 }
 
-void ICryptoNoteProtocolQueryStub::setSynchronizedStatus(bool status) {
+void IFortressProtocolQueryStub::setSynchronizedStatus(bool status) {
     synchronized = status;
 }

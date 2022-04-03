@@ -1,17 +1,17 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "TestGenerator.h"
 
 #include <Common/Math.h>
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/Miner.h"
-#include "CryptoNoteCore/TransactionExtra.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/Miner.h"
+#include "FortressCore/TransactionExtra.h"
+#include "FortressCore/FortressTools.h"
 
 using namespace std;
-using namespace CryptoNote;
+using namespace Fortress;
 
 #ifndef CHECK_AND_ASSERT_MES
 #define CHECK_AND_ASSERT_MES(expr, fail_ret_val, message)   do{if(!(expr)) {std::cerr << message << std::endl; return fail_ret_val;};}while(0)
@@ -50,13 +50,13 @@ uint64_t test_generator::getAlreadyGeneratedCoins(const Crypto::Hash& blockId) c
   return it->second.alreadyGeneratedCoins;
 }
 
-uint64_t test_generator::getAlreadyGeneratedCoins(const CryptoNote::Block& blk) const {
+uint64_t test_generator::getAlreadyGeneratedCoins(const Fortress::Block& blk) const {
   Crypto::Hash blkHash;
   get_block_hash(blk, blkHash);
   return getAlreadyGeneratedCoins(blkHash);
 }
 
-void test_generator::addBlock(const CryptoNote::Block& blk, size_t tsxSize, uint64_t fee,
+void test_generator::addBlock(const Fortress::Block& blk, size_t tsxSize, uint64_t fee,
                               std::vector<size_t>& blockSizes, uint64_t alreadyGeneratedCoins) {
   const size_t blockSize = tsxSize + getObjectBinarySize(blk.baseTransaction);
   int64_t emissionChange;
@@ -66,9 +66,9 @@ void test_generator::addBlock(const CryptoNote::Block& blk, size_t tsxSize, uint
   m_blocksInfo[get_block_hash(blk)] = BlockInfo(blk.previousBlockHash, alreadyGeneratedCoins + emissionChange, blockSize);
 }
 
-bool test_generator::constructBlock(CryptoNote::Block& blk, uint32_t height, const Crypto::Hash& previousBlockHash,
-                                    const CryptoNote::AccountBase& minerAcc, uint64_t timestamp, uint64_t alreadyGeneratedCoins,
-                                    std::vector<size_t>& blockSizes, const std::list<CryptoNote::Transaction>& txList) {
+bool test_generator::constructBlock(Fortress::Block& blk, uint32_t height, const Crypto::Hash& previousBlockHash,
+                                    const Fortress::AccountBase& minerAcc, uint64_t timestamp, uint64_t alreadyGeneratedCoins,
+                                    std::vector<size_t>& blockSizes, const std::list<Fortress::Transaction>& txList) {
   blk.majorVersion = defaultMajorVersion;
   blk.minorVersion = defaultMinorVersion;
   blk.timestamp = timestamp;
@@ -138,15 +138,15 @@ bool test_generator::constructBlock(CryptoNote::Block& blk, uint32_t height, con
   return true;
 }
 
-bool test_generator::constructBlock(CryptoNote::Block& blk, const CryptoNote::AccountBase& minerAcc, uint64_t timestamp) {
+bool test_generator::constructBlock(Fortress::Block& blk, const Fortress::AccountBase& minerAcc, uint64_t timestamp) {
   std::vector<size_t> blockSizes;
-  std::list<CryptoNote::Transaction> txList;
+  std::list<Fortress::Transaction> txList;
   return constructBlock(blk, 0, NULL_HASH, minerAcc, timestamp, 0, blockSizes, txList);
 }
 
-bool test_generator::constructBlock(CryptoNote::Block& blk, const CryptoNote::Block& blkPrev,
-                                    const CryptoNote::AccountBase& minerAcc,
-                                    const std::list<CryptoNote::Transaction>& txList/* = std::list<CryptoNote::Transaction>()*/) {
+bool test_generator::constructBlock(Fortress::Block& blk, const Fortress::Block& blkPrev,
+                                    const Fortress::AccountBase& minerAcc,
+                                    const std::list<Fortress::Transaction>& txList/* = std::list<Fortress::Transaction>()*/) {
   uint32_t height = boost::get<BaseInput>(blkPrev.baseTransaction.inputs.front()).blockIndex + 1;
   Crypto::Hash previousBlockHash = get_block_hash(blkPrev);
   // Keep difficulty unchanged
@@ -197,17 +197,17 @@ bool test_generator::constructBlockManually(Block& blk, const Block& prevBlock, 
   return true;
 }
 
-bool test_generator::constructBlockManuallyTx(CryptoNote::Block& blk, const CryptoNote::Block& prevBlock,
-                                              const CryptoNote::AccountBase& minerAcc,
+bool test_generator::constructBlockManuallyTx(Fortress::Block& blk, const Fortress::Block& prevBlock,
+                                              const Fortress::AccountBase& minerAcc,
                                               const std::vector<Crypto::Hash>& transactionHashes, size_t txsSize) {
   return constructBlockManually(blk, prevBlock, minerAcc, bf_tx_hashes, 0, 0, 0, Crypto::Hash(), 0, Transaction(),
     transactionHashes, txsSize);
 }
 
-bool test_generator::constructMaxSizeBlock(CryptoNote::Block& blk, const CryptoNote::Block& blkPrev,
-                                           const CryptoNote::AccountBase& minerAccount,
+bool test_generator::constructMaxSizeBlock(Fortress::Block& blk, const Fortress::Block& blkPrev,
+                                           const Fortress::AccountBase& minerAccount,
                                            size_t medianBlockCount/* = 0*/,
-                                           const std::list<CryptoNote::Transaction>& txList/* = std::list<CryptoNote::Transaction>()*/) {
+                                           const std::list<Fortress::Transaction>& txList/* = std::list<Fortress::Transaction>()*/) {
   std::vector<size_t> blockSizes;
   medianBlockCount = medianBlockCount == 0 ? m_currency.rewardBlocksWindow() : medianBlockCount;
   getLastNBlockSizes(blockSizes, get_block_hash(blkPrev), medianBlockCount);
@@ -237,7 +237,7 @@ bool test_generator::constructMaxSizeBlock(CryptoNote::Block& blk, const CryptoN
     0, 0, 0, Crypto::Hash(), 0, baseTransaction, transactionHashes, txsSize, totalFee);
 }
 
-void fillNonce(CryptoNote::Block& blk, const difficulty_type& diffic) {
+void fillNonce(Fortress::Block& blk, const difficulty_type& diffic) {
   blk.nonce = 0;
   Crypto::cn_context context;
   while (!miner::find_nonce_for_given_block(context, blk, diffic)) {
@@ -245,7 +245,7 @@ void fillNonce(CryptoNote::Block& blk, const difficulty_type& diffic) {
   }
 }
 
-bool constructMinerTxManually(const CryptoNote::Currency& currency, uint32_t height, uint64_t alreadyGeneratedCoins,
+bool constructMinerTxManually(const Fortress::Currency& currency, uint32_t height, uint64_t alreadyGeneratedCoins,
                               const AccountPublicAddress& minerAddress, Transaction& tx, uint64_t fee,
                               KeyPair* pTxKey/* = 0*/) {
   KeyPair txkey = generateKeyPair();
@@ -283,12 +283,12 @@ bool constructMinerTxManually(const CryptoNote::Currency& currency, uint32_t hei
   return true;
 }
 
-bool constructMinerTxBySize(const CryptoNote::Currency& currency, CryptoNote::Transaction& baseTransaction, uint32_t height,
-                            uint64_t alreadyGeneratedCoins, const CryptoNote::AccountPublicAddress& minerAddress,
+bool constructMinerTxBySize(const Fortress::Currency& currency, Fortress::Transaction& baseTransaction, uint32_t height,
+                            uint64_t alreadyGeneratedCoins, const Fortress::AccountPublicAddress& minerAddress,
                             std::vector<size_t>& blockSizes, size_t targetTxSize, size_t targetBlockSize,
                             uint64_t fee/* = 0*/) {
   if (!currency.constructMinerTx(height, Common::medianValue(blockSizes), alreadyGeneratedCoins, targetBlockSize,
-      fee, minerAddress, baseTransaction, CryptoNote::BinaryArray(), 1)) {
+      fee, minerAddress, baseTransaction, Fortress::BinaryArray(), 1)) {
     return false;
   }
 

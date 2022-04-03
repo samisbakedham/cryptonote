@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,9 +9,9 @@
 #include <ostream>
 #include <string>
 #include <system_error>
-#include "CryptoNote.h"
+#include "Fortress.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 typedef size_t TransactionId;
 typedef size_t TransferId;

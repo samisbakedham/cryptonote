@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -40,7 +40,7 @@
 
 using namespace Common;
 using namespace Logging;
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace {
 
@@ -68,7 +68,7 @@ void addPortMapping(Logging::LoggerRef& logger, uint32_t port) {
       std::ostringstream portString;
       portString << port;
       if (UPNP_AddPortMapping(urls.controlURL, igdData.first.servicetype, portString.str().c_str(),
-        portString.str().c_str(), lanAddress, CryptoNote::CRYPTONOTE_NAME, "TCP", 0, "0") != 0) {
+        portString.str().c_str(), lanAddress, Fortress::Fortress_NAME, "TCP", 0, "0") != 0) {
         logger(ERROR) << "UPNP_AddPortMapping failed.";
       } else {
         logger(INFO, BRIGHT_GREEN) << "Added IGD port mapping.";
@@ -94,12 +94,12 @@ bool parse_peer_from_string(NetworkAddress& pe, const std::string& node_addr) {
 }
 
 
-namespace CryptoNote
+namespace Fortress
 {
   namespace
   {
     const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p network protocol", "0.0.0.0"};
-    const command_line::arg_descriptor<std::string> arg_p2p_bind_port      = {"p2p-bind-port", "Port for p2p network protocol", std::to_string(CryptoNote::P2P_DEFAULT_PORT)};
+    const command_line::arg_descriptor<std::string> arg_p2p_bind_port      = {"p2p-bind-port", "Port for p2p network protocol", std::to_string(Fortress::P2P_DEFAULT_PORT)};
     const command_line::arg_descriptor<uint32_t>    arg_p2p_external_port  = {"p2p-external-port", "External port for p2p network protocol (if port forwarding used with NAT)", 0};
     const command_line::arg_descriptor<bool>        arg_p2p_allow_local_ip = {"allow-local-ip", "Allow local ip add to peer list, mostly in debug purposes"};
     const command_line::arg_descriptor<std::vector<std::string> > arg_p2p_add_peer   = {"add-peer", "Manually add peer to local peerlist"};
@@ -186,13 +186,13 @@ namespace CryptoNote
     return ret;
   }
 
-  NodeServer::NodeServer(System::Dispatcher& dispatcher, CryptoNote::CryptoNoteProtocolHandler& payload_handler, Logging::ILogger& log) :
+  NodeServer::NodeServer(System::Dispatcher& dispatcher, Fortress::FortressProtocolHandler& payload_handler, Logging::ILogger& log) :
     m_dispatcher(dispatcher),
     m_workingContextGroup(dispatcher),
     m_payload_handler(payload_handler),
     m_allow_local_ip(false),
     m_hide_my_port(false),
-    m_network_id(CRYPTONOTE_NETWORK),
+    m_network_id(Fortress_NETWORK),
     logger(log, "node_server"),
     m_stopEvent(m_dispatcher),
     m_idleTimer(m_dispatcher),
@@ -200,7 +200,7 @@ namespace CryptoNote
     m_timeoutTimer(m_dispatcher),
     m_stop(false),
     // intervals
-    // m_peer_handshake_idle_maker_interval(CryptoNote::P2P_DEFAULT_HANDSHAKE_INTERVAL),
+    // m_peer_handshake_idle_maker_interval(Fortress::P2P_DEFAULT_HANDSHAKE_INTERVAL),
     m_connections_maker_interval(1),
     m_peerlist_store_interval(60*30, false) {
   }
@@ -226,7 +226,7 @@ namespace CryptoNote
     if (cmd.isResponse && cmd.command == COMMAND_TIMED_SYNC::ID) {
       if (!handleTimedSyncResponse(cmd.buf, ctx)) {
         // invalid response, close connection
-        ctx.m_state = CryptoNoteConnectionContext::state_shutdown;
+        ctx.m_state = FortressConnectionContext::state_shutdown;
       }
       return 0;
     }
@@ -279,7 +279,7 @@ namespace CryptoNote
         if (!p2p_data.fail()) {
           StdInputStream inputStream(p2p_data);
           BinaryInputStreamSerializer a(inputStream);
-          CryptoNote::serialize(*this, a);
+          Fortress::serialize(*this, a);
           loaded = true;
         }
       } catch (std::exception&) {
@@ -290,13 +290,13 @@ namespace CryptoNote
       }
 
       //at this moment we have hardcoded config
-      m_config.m_net_config.handshake_interval = CryptoNote::P2P_DEFAULT_HANDSHAKE_INTERVAL;
-      m_config.m_net_config.connections_count = CryptoNote::P2P_DEFAULT_CONNECTIONS_COUNT;
-      m_config.m_net_config.packet_max_size = CryptoNote::P2P_DEFAULT_PACKET_MAX_SIZE; //20 MB limit
+      m_config.m_net_config.handshake_interval = Fortress::P2P_DEFAULT_HANDSHAKE_INTERVAL;
+      m_config.m_net_config.connections_count = Fortress::P2P_DEFAULT_CONNECTIONS_COUNT;
+      m_config.m_net_config.packet_max_size = Fortress::P2P_DEFAULT_PACKET_MAX_SIZE; //20 MB limit
       m_config.m_net_config.config_id = 0; // initial config
-      m_config.m_net_config.connection_timeout = CryptoNote::P2P_DEFAULT_CONNECTION_TIMEOUT;
-      m_config.m_net_config.ping_connection_timeout = CryptoNote::P2P_DEFAULT_PING_CONNECTION_TIMEOUT;
-      m_config.m_net_config.send_peerlist_sz = CryptoNote::P2P_DEFAULT_PEERS_IN_HANDSHAKE;
+      m_config.m_net_config.connection_timeout = Fortress::P2P_DEFAULT_CONNECTION_TIMEOUT;
+      m_config.m_net_config.ping_connection_timeout = Fortress::P2P_DEFAULT_PING_CONNECTION_TIMEOUT;
+      m_config.m_net_config.send_peerlist_sz = Fortress::P2P_DEFAULT_PEERS_IN_HANDSHAKE;
 
       m_first_connection_maker_call = true;
     } catch (const std::exception& e) {
@@ -307,7 +307,7 @@ namespace CryptoNote
   }
 
   //----------------------------------------------------------------------------------- 
-  void NodeServer::for_each_connection(std::function<void(CryptoNoteConnectionContext&, PeerIdType)> f)
+  void NodeServer::for_each_connection(std::function<void(FortressConnectionContext&, PeerIdType)> f)
   {
     for (auto& ctx : m_connections) {
       f(ctx.second, ctx.second.peerId);
@@ -423,7 +423,7 @@ namespace CryptoNote
   
   bool NodeServer::init(const NetNodeConfig& config) {
     if (!config.getTestnet()) {
-      for (auto seed : CryptoNote::SEED_NODES) {
+      for (auto seed : Fortress::SEED_NODES) {
         append_net_address(m_seed_nodes, seed);
       }
     } else {
@@ -457,7 +457,7 @@ namespace CryptoNote
 
     //configure self
     // m_net_server.get_config_object().m_pcommands_handler = this;
-    // m_net_server.get_config_object().m_invoke_timeout = CryptoNote::P2P_DEFAULT_INVOKE_TIMEOUT;
+    // m_net_server.get_config_object().m_invoke_timeout = Fortress::P2P_DEFAULT_INVOKE_TIMEOUT;
 
     //try to bind
     logger(INFO) << "Binding on " << m_bind_ip << ":" << m_port;
@@ -476,7 +476,7 @@ namespace CryptoNote
   }
   //-----------------------------------------------------------------------------------
   
-  CryptoNote::CryptoNoteProtocolHandler& NodeServer::get_payload_object()
+  Fortress::FortressProtocolHandler& NodeServer::get_payload_object()
   {
     return m_payload_handler;
   }
@@ -531,7 +531,7 @@ namespace CryptoNote
 
       StdOutputStream stream(p2p_data);
       BinaryOutputStreamSerializer a(stream);
-      CryptoNote::serialize(*this, a);
+      Fortress::serialize(*this, a);
       return true;
     } catch (const std::exception& e) {
       logger(WARNING) << "store_config failed: " << e.what();
@@ -554,7 +554,7 @@ namespace CryptoNote
   }
 
   //----------------------------------------------------------------------------------- 
-  bool NodeServer::handshake(CryptoNote::LevinProtocol& proto, P2pConnectionContext& context, bool just_take_peerlist) {
+  bool NodeServer::handshake(Fortress::LevinProtocol& proto, P2pConnectionContext& context, bool just_take_peerlist) {
     COMMAND_HANDSHAKE::request arg;
     COMMAND_HANDSHAKE::response rsp;
     get_local_node_data(arg.node_data);
@@ -606,8 +606,8 @@ namespace CryptoNote
 
     forEachConnection([&](P2pConnectionContext& conn) {
       if (conn.peerId && 
-          (conn.m_state == CryptoNoteConnectionContext::state_normal || 
-           conn.m_state == CryptoNoteConnectionContext::state_idle)) {
+          (conn.m_state == FortressConnectionContext::state_normal || 
+           conn.m_state == FortressConnectionContext::state_idle)) {
         conn.pushMessage(P2pMessage(P2pMessage::COMMAND, COMMAND_TIMED_SYNC::ID, cmdBuf));
       }
     });
@@ -716,7 +716,7 @@ namespace CryptoNote
 
       try {
         System::Context<bool> handshakeContext(m_dispatcher, [&] {
-          CryptoNote::LevinProtocol proto(ctx.connection);
+          Fortress::LevinProtocol proto(ctx.connection);
           return handshake(proto, ctx, just_take_peerlist);
         });
 
@@ -840,7 +840,7 @@ namespace CryptoNote
 
     if (!connect_to_peerlist(m_priority_peers)) return false;
 
-    size_t expected_white_connections = (m_config.m_net_config.connections_count * CryptoNote::P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT) / 100;
+    size_t expected_white_connections = (m_config.m_net_config.connections_count * Fortress::P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT) / 100;
 
     size_t conn_count = get_outgoing_connections_count();
     if(conn_count < m_config.m_net_config.connections_count)
@@ -927,7 +927,7 @@ namespace CryptoNote
 
   //-----------------------------------------------------------------------------------
  
-  bool NodeServer::handle_remote_peerlist(const std::list<PeerlistEntry>& peerlist, time_t local_time, const CryptoNoteConnectionContext& context)
+  bool NodeServer::handle_remote_peerlist(const std::list<PeerlistEntry>& peerlist, time_t local_time, const FortressConnectionContext& context)
   {
     int64_t delta = 0;
     std::list<PeerlistEntry> peerlist_ = peerlist;
@@ -976,7 +976,7 @@ namespace CryptoNote
     }
 
     Crypto::PublicKey pk;
-    Common::podFromHex(CryptoNote::P2P_STAT_TRUSTED_PUB_KEY, pk);
+    Common::podFromHex(Fortress::P2P_STAT_TRUSTED_PUB_KEY, pk);
     Crypto::Hash h = get_proof_of_trust_hash(tr);
     if (!Crypto::check_signature(h, pk, tr.sign)) {
       logger(ERROR) << "check_trust failed: sign check failed";
@@ -992,7 +992,7 @@ namespace CryptoNote
   int NodeServer::handle_get_stat_info(int command, COMMAND_REQUEST_STAT_INFO::request& arg, COMMAND_REQUEST_STAT_INFO::response& rsp, P2pConnectionContext& context)
   {
     if(!check_trust(arg.tr)) {
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
     rsp.connections_count = get_connections_count();
@@ -1007,7 +1007,7 @@ namespace CryptoNote
   int NodeServer::handle_get_network_state(int command, COMMAND_REQUEST_NETWORK_STATE::request& arg, COMMAND_REQUEST_NETWORK_STATE::response& rsp, P2pConnectionContext& context)
   {
     if(!check_trust(arg.tr)) {
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
 
@@ -1041,15 +1041,15 @@ namespace CryptoNote
 
     forEachConnection([&](P2pConnectionContext& conn) {
       if (conn.peerId && conn.m_connection_id != excludeId &&
-          (conn.m_state == CryptoNoteConnectionContext::state_normal ||
-           conn.m_state == CryptoNoteConnectionContext::state_synchronizing)) {
+          (conn.m_state == FortressConnectionContext::state_normal ||
+           conn.m_state == FortressConnectionContext::state_synchronizing)) {
         conn.pushMessage(P2pMessage(P2pMessage::NOTIFY, command, data_buff));
       }
     });
   }
  
   //-----------------------------------------------------------------------------------
-  bool NodeServer::invoke_notify_to_peer(int command, const BinaryArray& buffer, const CryptoNoteConnectionContext& context) {
+  bool NodeServer::invoke_notify_to_peer(int command, const BinaryArray& buffer, const FortressConnectionContext& context) {
     auto it = m_connections.find(context.m_connection_id);
     if (it == m_connections.end()) {
       return false;
@@ -1110,7 +1110,7 @@ namespace CryptoNote
   {
     if(!m_payload_handler.process_payload_sync_data(arg.payload_data, context, false)) {
       logger(Logging::ERROR) << context << "Failed to process_payload_sync_data(), dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
 
@@ -1129,25 +1129,25 @@ namespace CryptoNote
 
     if (arg.node_data.network_id != m_network_id) {
       logger(Logging::INFO) << context << "WRONG NETWORK AGENT CONNECTED! id=" << arg.node_data.network_id;
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
 
     if(!context.m_is_income) {
       logger(Logging::ERROR) << context << "COMMAND_HANDSHAKE came not from incoming connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
 
     if(context.peerId) {
       logger(Logging::ERROR) << context << "COMMAND_HANDSHAKE came, but seems that connection already have associated peer_id (double COMMAND_HANDSHAKE?)";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
 
     if(!m_payload_handler.process_payload_sync_data(arg.payload_data, context, true))  {
       logger(Logging::ERROR) << context << "COMMAND_HANDSHAKE came, but process_payload_sync_data returned false, dropping connection.";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = FortressConnectionContext::state_shutdown;
       return 1;
     }
     //associate peer_id with this connection
@@ -1362,11 +1362,11 @@ namespace CryptoNote
         LevinProtocol::Command cmd;
 
         for (;;) {
-          if (ctx.m_state == CryptoNoteConnectionContext::state_sync_required) {
-            ctx.m_state = CryptoNoteConnectionContext::state_synchronizing;
+          if (ctx.m_state == FortressConnectionContext::state_sync_required) {
+            ctx.m_state = FortressConnectionContext::state_synchronizing;
             m_payload_handler.start_sync(ctx);
-          } else if (ctx.m_state == CryptoNoteConnectionContext::state_pool_sync_required) {
-            ctx.m_state = CryptoNoteConnectionContext::state_normal;
+          } else if (ctx.m_state == FortressConnectionContext::state_pool_sync_required) {
+            ctx.m_state = FortressConnectionContext::state_normal;
             m_payload_handler.requestMissingPoolTransactions(ctx);
           }
 
@@ -1388,7 +1388,7 @@ namespace CryptoNote
             ctx.pushMessage(P2pMessage(P2pMessage::REPLY, cmd.command, std::move(response), retcode));
           }
 
-          if (ctx.m_state == CryptoNoteConnectionContext::state_shutdown) {
+          if (ctx.m_state == FortressConnectionContext::state_shutdown) {
             break;
           }
         }

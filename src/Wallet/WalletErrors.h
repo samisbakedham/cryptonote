@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <system_error>
 
-namespace CryptoNote {
+namespace Fortress {
 namespace error {
 
 // custom error conditions enum type:
@@ -92,13 +92,13 @@ private:
 }
 }
 
-inline std::error_code make_error_code(CryptoNote::error::WalletErrorCodes e) {
-  return std::error_code(static_cast<int>(e), CryptoNote::error::WalletErrorCategory::INSTANCE);
+inline std::error_code make_error_code(Fortress::error::WalletErrorCodes e) {
+  return std::error_code(static_cast<int>(e), Fortress::error::WalletErrorCategory::INSTANCE);
 }
 
 namespace std {
 
 template <>
-struct is_error_code_enum<CryptoNote::error::WalletErrorCodes>: public true_type {};
+struct is_error_code_enum<Fortress::error::WalletErrorCodes>: public true_type {};
 
 }

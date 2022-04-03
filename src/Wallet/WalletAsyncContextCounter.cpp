@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "WalletAsyncContextCounter.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 void WalletAsyncContextCounter::addAsyncContext() {
   std::unique_lock<std::mutex> lock(m_mutex);
@@ -24,4 +24,4 @@ void WalletAsyncContextCounter::waitAsyncContextsFinish() {
     m_cv.wait(lock);
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,12 +11,12 @@
 #include <System/Event.h>
 #include <System/RemoteContext.h>
 
-#include "CryptoNote.h"
-#include "CryptoNoteCore/Difficulty.h"
+#include "Fortress.h"
+#include "FortressCore/Difficulty.h"
 
 #include "Logging/LoggerRef.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 struct BlockMiningParameters {
   Block blockTemplate;
@@ -51,4 +51,4 @@ private:
   bool setStateBlockFound();
 };
 
-} //namespace CryptoNote
+} //namespace Fortress

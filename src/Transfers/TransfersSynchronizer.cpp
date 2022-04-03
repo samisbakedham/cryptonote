@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,11 +13,11 @@
 using namespace Common;
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace Fortress {
 
 const uint32_t TRANSFERS_STORAGE_ARCHIVE_VERSION = 0;
 
-TransfersSyncronizer::TransfersSyncronizer(const CryptoNote::Currency& currency, IBlockchainSynchronizer& sync, INode& node) :
+TransfersSyncronizer::TransfersSyncronizer(const Fortress::Currency& currency, IBlockchainSynchronizer& sync, INode& node) :
   m_currency(currency), m_sync(sync), m_node(node) {
 }
 
@@ -140,7 +140,7 @@ void TransfersSyncronizer::save(std::ostream& os) {
   m_sync.save(os);
 
   StdOutputStream stream(os);
-  CryptoNote::BinaryOutputStreamSerializer s(stream);
+  Fortress::BinaryOutputStreamSerializer s(stream);
   s(const_cast<uint32_t&>(TRANSFERS_STORAGE_ARCHIVE_VERSION), "version");
 
   size_t subscriptionCount = m_consumers.size();
@@ -204,7 +204,7 @@ void TransfersSyncronizer::load(std::istream& is) {
   m_sync.load(is);
 
   StdInputStream inputStream(is);
-  CryptoNote::BinaryInputStreamSerializer s(inputStream);
+  Fortress::BinaryInputStreamSerializer s(inputStream);
   uint32_t version = 0;
 
   s(version, "version");

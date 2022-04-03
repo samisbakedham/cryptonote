@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,10 +6,10 @@
 
 #include <vector>
 
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressBasic.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
 #include "crypto/crypto.h"
 
 #include "MultiTransactionTestBase.h"
@@ -27,7 +27,7 @@ public:
 
   bool init()
   {
-    using namespace CryptoNote;
+    using namespace Fortress;
 
     if (!base_class::init())
       return false;
@@ -47,12 +47,12 @@ public:
 
   bool test()
   {
-    const CryptoNote::KeyInput& txin = boost::get<CryptoNote::KeyInput>(m_tx.inputs[0]);
+    const Fortress::KeyInput& txin = boost::get<Fortress::KeyInput>(m_tx.inputs[0]);
     return Crypto::check_ring_signature(m_tx_prefix_hash, txin.keyImage, this->m_public_key_ptrs, ring_size, m_tx.signatures[0].data());
   }
 
 private:
-  CryptoNote::AccountBase m_alice;
-  CryptoNote::Transaction m_tx;
+  Fortress::AccountBase m_alice;
+  Fortress::Transaction m_tx;
   Crypto::Hash m_tx_prefix_hash;
 };

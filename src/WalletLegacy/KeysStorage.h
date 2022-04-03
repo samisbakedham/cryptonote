@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-namespace CryptoNote {
+namespace Fortress {
 
 class ISerializer;
 
@@ -25,4 +25,4 @@ struct KeysStorage {
   void serialize(ISerializer& serializer, const std::string& name);
 };
 
-} //namespace CryptoNote
+} //namespace Fortress

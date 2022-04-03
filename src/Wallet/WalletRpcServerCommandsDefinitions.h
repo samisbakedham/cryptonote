@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
-#include "CryptoNoteProtocol/CryptoNoteProtocolDefinitions.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "FortressProtocol/FortressProtocolDefinitions.h"
+#include "FortressCore/FortressBasic.h"
 #include "crypto/hash.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 #include "WalletRpcServerErrorCodes.h"
@@ -14,14 +14,14 @@ namespace Tools
 namespace wallet_rpc
 {
 
-using CryptoNote::ISerializer;
+using Fortress::ISerializer;
 
 #define WALLET_RPC_STATUS_OK      "OK"
 #define WALLET_RPC_STATUS_BUSY    "BUSY"
 
   struct COMMAND_RPC_GET_BALANCE
   {
-    typedef CryptoNote::EMPTY_STRUCT request;
+    typedef Fortress::EMPTY_STRUCT request;
 
     struct response
     {
@@ -77,8 +77,8 @@ using CryptoNote::ISerializer;
 
   struct COMMAND_RPC_STORE
   {
-    typedef CryptoNote::EMPTY_STRUCT request;
-    typedef CryptoNote::EMPTY_STRUCT response;
+    typedef Fortress::EMPTY_STRUCT request;
+    typedef Fortress::EMPTY_STRUCT response;
   };
 
   struct payment_details
@@ -142,7 +142,7 @@ using CryptoNote::ISerializer;
   };
 
   struct COMMAND_RPC_GET_TRANSFERS {
-    typedef CryptoNote::EMPTY_STRUCT request;
+    typedef Fortress::EMPTY_STRUCT request;
 
     struct response {
       std::list<Transfer> transfers;
@@ -154,7 +154,7 @@ using CryptoNote::ISerializer;
   };
 
   struct COMMAND_RPC_GET_HEIGHT {
-    typedef CryptoNote::EMPTY_STRUCT request;
+    typedef Fortress::EMPTY_STRUCT request;
 
     struct response {
       uint64_t height;
@@ -166,8 +166,8 @@ using CryptoNote::ISerializer;
   };
 
   struct COMMAND_RPC_RESET {
-    typedef CryptoNote::EMPTY_STRUCT request;
-    typedef CryptoNote::EMPTY_STRUCT response;
+    typedef Fortress::EMPTY_STRUCT request;
+    typedef Fortress::EMPTY_STRUCT response;
   };
 }
 }

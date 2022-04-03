@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@ namespace System {
 class Dispatcher;
 }
 
-namespace CryptoNote {
+namespace Fortress {
 class Currency;
 }
 
@@ -54,7 +54,7 @@ class TestNetwork {
 
 public:
 
-  TestNetwork(System::Dispatcher& dispatcher, const CryptoNote::Currency& currency);
+  TestNetwork(System::Dispatcher& dispatcher, const Fortress::Currency& currency);
 
   void addNodes(const std::vector<TestNodeConfiguration>& nodes);
   void addNode(const TestNodeConfiguration& cfg);
@@ -69,7 +69,7 @@ private:
 
   std::vector<std::pair<std::unique_ptr<TestNode>, TestNodeConfiguration>> nodes;
   System::Dispatcher& m_dispatcher;
-  const CryptoNote::Currency& m_currency;
+  const Fortress::Currency& m_currency;
   std::vector<Process> m_daemons;
 };
 

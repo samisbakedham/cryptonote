@@ -1,14 +1,14 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "gtest/gtest.h"
 
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/FortressBasicImpl.h"
+#include "FortressCore/Currency.h"
 #include <Logging/LoggerGroup.h>
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 namespace
 {
@@ -21,7 +21,7 @@ namespace
   public:
     getBlockReward_and_already_generated_coins() :
       ::testing::Test(),
-      m_currency(CryptoNote::CurrencyBuilder(m_logger).
+      m_currency(Fortress::CurrencyBuilder(m_logger).
         blockGrantedFullRewardZone(TEST_GRANTED_FULL_REWARD_ZONE).
         moneySupply(TEST_MONEY_SUPPLY).
         emissionSpeedFactor(TEST_EMISSION_SPEED_FACTOR).
@@ -32,7 +32,7 @@ namespace
     static const size_t currentBlockSize = TEST_GRANTED_FULL_REWARD_ZONE / 2;
 
     Logging::LoggerGroup m_logger;
-    CryptoNote::Currency m_currency;
+    Fortress::Currency m_currency;
     bool m_blockTooBig;
     int64_t m_emissionChange;
     uint64_t m_blockReward;
@@ -70,7 +70,7 @@ namespace
   public:
     getBlockReward_and_median_and_blockSize() :
       ::testing::Test(),
-      m_currency(CryptoNote::CurrencyBuilder(m_logger).
+      m_currency(Fortress::CurrencyBuilder(m_logger).
         blockGrantedFullRewardZone(TEST_GRANTED_FULL_REWARD_ZONE).
         moneySupply(TEST_MONEY_SUPPLY).
         emissionSpeedFactor(TEST_EMISSION_SPEED_FACTOR).
@@ -93,7 +93,7 @@ namespace
     }
 
     Logging::LoggerGroup m_logger;
-    CryptoNote::Currency m_currency;
+    Fortress::Currency m_currency;
     bool m_blockTooBig;
     int64_t m_emissionChange;
     uint64_t m_blockReward;
@@ -166,7 +166,7 @@ namespace
   public:
     getBlockReward_and_currentBlockSize() :
       ::testing::Test(),
-      m_currency(CryptoNote::CurrencyBuilder(m_logger).
+      m_currency(Fortress::CurrencyBuilder(m_logger).
         blockGrantedFullRewardZone(TEST_GRANTED_FULL_REWARD_ZONE).
         moneySupply(TEST_MONEY_SUPPLY).
         emissionSpeedFactor(TEST_EMISSION_SPEED_FACTOR).
@@ -191,7 +191,7 @@ namespace
     }
 
     Logging::LoggerGroup m_logger;
-    CryptoNote::Currency m_currency;
+    Fortress::Currency m_currency;
     bool m_blockTooBig;
     int64_t m_emissionChange;
     uint64_t m_blockReward;
@@ -272,7 +272,7 @@ namespace
   public:
     getBlockReward_fee_and_penalizeFee_test() :
       ::testing::Test(),
-      m_currency(CryptoNote::CurrencyBuilder(m_logger).
+      m_currency(Fortress::CurrencyBuilder(m_logger).
         blockGrantedFullRewardZone(testGrantedFullRewardZone).
         moneySupply(testMoneySupply).
         emissionSpeedFactor(testEmissionSpeedFactor).
@@ -297,7 +297,7 @@ namespace
     }
 
     Logging::LoggerGroup m_logger;
-    CryptoNote::Currency m_currency;
+    Fortress::Currency m_currency;
     bool m_blockTooBig;
     int64_t m_emissionChange;
     uint64_t m_blockReward;

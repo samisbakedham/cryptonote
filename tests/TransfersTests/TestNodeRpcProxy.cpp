@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,7 @@
 #include "../IntegrationTestLib/TestWalletLegacy.h"
 
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Crypto;
 using namespace Tests::Common;
 
@@ -29,7 +29,7 @@ namespace {
 
   protected:
     Logging::LoggerManager m_logManager;
-    CryptoNote::Currency m_currency;
+    Fortress::Currency m_currency;
   };
 
   class PoolChangedObserver : public INodeObserver {
@@ -59,8 +59,8 @@ namespace {
 
     launchTestnet(2, Tests::Common::BaseFunctionalTests::Line);
 
-    std::unique_ptr<CryptoNote::INode> node0;
-    std::unique_ptr<CryptoNote::INode> node1;
+    std::unique_ptr<Fortress::INode> node0;
+    std::unique_ptr<Fortress::INode> node1;
 
     nodeDaemons[NODE_0]->makeINode(node0);
     nodeDaemons[NODE_1]->makeINode(node1);

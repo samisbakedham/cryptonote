@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "CryptoNoteConfig.h"
+#include "FortressConfig.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -286,14 +286,14 @@ std::string get_nix_version_display_string()
   std::string getDefaultDataDirectory()
   {
     //namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME
-    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME
-    // Unix: ~/.CRYPTONOTE_NAME
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Fortress_NAME
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Fortress_NAME
+    // Mac: ~/Library/Application Support/Fortress_NAME
+    // Unix: ~/.Fortress_NAME
     std::string config_folder;
 #ifdef WIN32
     // Windows
-    config_folder = get_special_folder_path(CSIDL_APPDATA, true) + "/" + CryptoNote::CRYPTONOTE_NAME;
+    config_folder = get_special_folder_path(CSIDL_APPDATA, true) + "/" + Fortress::Fortress_NAME;
 #else
     std::string pathRet;
     char* pszHome = getenv("HOME");
@@ -304,10 +304,10 @@ std::string get_nix_version_display_string()
 #ifdef MAC_OSX
     // Mac
     pathRet /= "Library/Application Support";
-    config_folder =  (pathRet + "/" + CryptoNote::CRYPTONOTE_NAME);
+    config_folder =  (pathRet + "/" + Fortress::Fortress_NAME);
 #else
     // Unix
-    config_folder = (pathRet + "/." + CryptoNote::CRYPTONOTE_NAME);
+    config_folder = (pathRet + "/." + Fortress::Fortress_NAME);
 #endif
 #endif
 

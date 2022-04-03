@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +11,7 @@
 #include "Serialization/BinarySerializationTools.h"
 
 using namespace Common;
-using namespace CryptoNote;
+using namespace Fortress;
 
 TEST(BinarySerializer, uint16) {
 
@@ -49,8 +49,8 @@ TEST(BinarySerializer, uint16) {
 //#include <iostream>
 //#include <vector>
 //#include <boost/foreach.hpp>
-//#include "CryptoNoteCore/CryptoNoteBasic.h"
-//#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
+//#include "FortressCore/FortressBasic.h"
+//#include "FortressCore/FortressBasicImpl.h"
 //#include "Serialization/serialization.h"
 //#include "Serialization/binary_archive.h"
 //#include "Serialization/json_archive.h"
@@ -312,7 +312,7 @@ TEST(BinarySerializer, uint16) {
 //
 //TEST(Serialization, serializes_transacion_signatures_correctly)
 //{
-//  using namespace CryptoNote;
+//  using namespace Fortress;
 //
 //  Transaction tx;
 //  Transaction tx1;

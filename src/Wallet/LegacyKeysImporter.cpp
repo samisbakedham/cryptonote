@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,9 +9,9 @@
 
 #include "Common/StringTools.h"
 
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Currency.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressTools.h"
 
 #include "Serialization/SerializationTools.h"
 
@@ -27,7 +27,7 @@ struct keys_file_data {
   chacha8_iv iv;
   std::string account_data;
 
-  void serialize(CryptoNote::ISerializer& s) {
+  void serialize(Fortress::ISerializer& s) {
     s(iv, "iv");
     s(account_data, "account_data");
   }
@@ -39,16 +39,16 @@ bool verify_keys(const SecretKey& sec, const PublicKey& expected_pub) {
   return r && expected_pub == pub;
 }
 
-void loadKeysFromFile(const std::string& filename, const std::string& password, CryptoNote::AccountBase& account) {
+void loadKeysFromFile(const std::string& filename, const std::string& password, Fortress::AccountBase& account) {
   keys_file_data keys_file_data;
   std::string buf;
 
   if (!Common::loadFileToString(filename, buf)) {
-    throw std::system_error(make_error_code(CryptoNote::error::INTERNAL_WALLET_ERROR), "failed to load \"" + filename + '\"');
+    throw std::system_error(make_error_code(Fortress::error::INTERNAL_WALLET_ERROR), "failed to load \"" + filename + '\"');
   }
 
-  if (!CryptoNote::fromBinaryArray(keys_file_data, Common::asBinaryArray(buf))) {
-    throw std::system_error(make_error_code(CryptoNote::error::INTERNAL_WALLET_ERROR), "failed to deserialize \"" + filename + '\"');
+  if (!Fortress::fromBinaryArray(keys_file_data, Common::asBinaryArray(buf))) {
+    throw std::system_error(make_error_code(Fortress::error::INTERNAL_WALLET_ERROR), "failed to deserialize \"" + filename + '\"');
   }
 
   chacha8_key key;
@@ -58,30 +58,30 @@ void loadKeysFromFile(const std::string& filename, const std::string& password, 
   account_data.resize(keys_file_data.account_data.size());
   chacha8(keys_file_data.account_data.data(), keys_file_data.account_data.size(), key, keys_file_data.iv, &account_data[0]);
 
-  const CryptoNote::AccountKeys& keys = account.getAccountKeys();
+  const Fortress::AccountKeys& keys = account.getAccountKeys();
 
-  if (CryptoNote::loadFromBinaryKeyValue(account, account_data) &&
+  if (Fortress::loadFromBinaryKeyValue(account, account_data) &&
       verify_keys(keys.viewSecretKey, keys.address.viewPublicKey) &&
       verify_keys(keys.spendSecretKey, keys.address.spendPublicKey)) {
     return;
   }
 
-  throw std::system_error(make_error_code(CryptoNote::error::WRONG_PASSWORD));
+  throw std::system_error(make_error_code(Fortress::error::WRONG_PASSWORD));
 }
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 void importLegacyKeys(const std::string& legacyKeysFilename, const std::string& password, std::ostream& destination) {
-  CryptoNote::AccountBase account;
+  Fortress::AccountBase account;
 
   loadKeysFromFile(legacyKeysFilename, password, account);
 
-  CryptoNote::WalletUserTransactionsCache transactionsCache;
+  Fortress::WalletUserTransactionsCache transactionsCache;
   std::string cache;
-  CryptoNote::WalletLegacySerializer importer(account, transactionsCache);
+  Fortress::WalletLegacySerializer importer(account, transactionsCache);
   importer.serialize(destination, password, false, cache);
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

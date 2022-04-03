@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 #include "INodeStubs.h"
 #include "TestBlockchainGenerator.h"
 #include "TransactionApiHelpers.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/TransactionApi.h"
 
 #include <boost/scoped_array.hpp>
 
@@ -19,7 +19,7 @@
 
 #include <Logging/ConsoleLogger.h>
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 class TransfersObserver : public ITransfersObserver {
 public:
@@ -37,7 +37,7 @@ class TransfersApi : public ::testing::Test, public IBlockchainSynchronizerObser
 public:
 
   TransfersApi() :
-    m_currency(CryptoNote::CurrencyBuilder(m_logger).currency()),
+    m_currency(Fortress::CurrencyBuilder(m_logger).currency()),
     generator(m_currency),
     m_node(generator),
     m_sync(m_node, m_currency.genesisBlockHash()),
@@ -109,13 +109,13 @@ public:
 
   void generateMoneyForAccount(size_t idx) {
     generator.getBlockRewardForAddress(
-      reinterpret_cast<const CryptoNote::AccountPublicAddress&>(m_accounts[idx].address));
+      reinterpret_cast<const Fortress::AccountPublicAddress&>(m_accounts[idx].address));
   }
 
   std::error_code submitTransaction(ITransactionReader& tx) {
     auto data = tx.getTransactionData();
     Transaction outTx;
-    CryptoNote::fromBinaryArray(outTx, data);
+    Fortress::fromBinaryArray(outTx, data);
 
     std::promise<std::error_code> result;
     m_node.relayTransaction(outTx, [&result](std::error_code ec) {
@@ -132,7 +132,7 @@ protected:
   std::vector<ITransfersSubscription*> m_subscriptions;
 
   Logging::ConsoleLogger m_logger;
-  CryptoNote::Currency m_currency;
+  Fortress::Currency m_currency;
   TestBlockchainGenerator generator;
   INodeTrivialRefreshStub m_node;
   BlockchainSynchronizer m_sync;
@@ -143,7 +143,7 @@ protected:
 };
 
 
-namespace CryptoNote {
+namespace Fortress {
   inline bool operator == (const TransactionOutputInformation& t1, const TransactionOutputInformation& t2) {
     return 
       t1.type == t2.type &&

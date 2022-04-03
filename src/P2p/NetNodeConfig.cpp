@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,9 +10,9 @@
 #include "Common/CommandLine.h"
 #include "Common/StringTools.h"
 #include "crypto/crypto.h"
-#include "CryptoNoteConfig.h"
+#include "FortressConfig.h"
 
-namespace CryptoNote {
+namespace Fortress {
 namespace {
 
 const command_line::arg_descriptor<std::string> arg_p2p_bind_ip        = {"p2p-bind-ip", "Interface for p2p network protocol", "0.0.0.0"};
@@ -92,7 +92,7 @@ bool NetNodeConfig::init(const boost::program_options::variables_map& vm)
     configFolder = command_line::get_arg(vm, command_line::arg_data_dir);
   }
 
-  p2pStateFilename = CryptoNote::parameters::P2P_NET_DATA_FILENAME;
+  p2pStateFilename = Fortress::parameters::P2P_NET_DATA_FILENAME;
 
   if (command_line::has_arg(vm, arg_p2p_add_peer)) {
     std::vector<std::string> perrs = command_line::get_arg(vm, arg_p2p_add_peer);

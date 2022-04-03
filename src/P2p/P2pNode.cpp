@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,7 +28,7 @@ using namespace Common;
 using namespace Logging;
 using namespace System;
 
-namespace CryptoNote {
+namespace Fortress {
 
 namespace {
 
@@ -174,13 +174,13 @@ void P2pNode::serialize(ISerializer& s) {
 void P2pNode::save(std::ostream& os) {
   StdOutputStream stream(os);
   BinaryOutputStreamSerializer a(stream);
-  CryptoNote::serialize(*this, a);
+  Fortress::serialize(*this, a);
 }
 
 void P2pNode::load(std::istream& in) {
   StdInputStream stream(in);
   BinaryInputStreamSerializer a(stream);
-  CryptoNote::serialize(*this, a);
+  Fortress::serialize(*this, a);
 }
 
 void P2pNode::acceptLoop() {

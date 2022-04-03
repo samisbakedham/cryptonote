@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,8 +11,8 @@
 #include "Common/MemoryInputStream.h"
 #include "Common/StdInputStream.h"
 #include "Common/StdOutputStream.h"
-#include "CryptoNoteCore/CryptoNoteSerialization.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/FortressSerialization.h"
+#include "FortressCore/FortressTools.h"
 
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
@@ -62,7 +62,7 @@ struct UnlockTransactionJobDto {
 struct WalletTransactionDto {
   WalletTransactionDto() {}
 
-  WalletTransactionDto(const CryptoNote::WalletTransaction& wallet) {
+  WalletTransactionDto(const Fortress::WalletTransaction& wallet) {
     state = wallet.state;
     timestamp = wallet.timestamp;
     blockHeight = wallet.blockHeight;
@@ -74,7 +74,7 @@ struct WalletTransactionDto {
     extra = wallet.extra;
   }
 
-  CryptoNote::WalletTransactionState state;
+  Fortress::WalletTransactionState state;
   uint64_t timestamp;
   uint32_t blockHeight;
   Hash hash;
@@ -88,7 +88,7 @@ struct WalletTransactionDto {
 //DO NOT CHANGE IT
 struct WalletTransferDto {
   WalletTransferDto(uint32_t version) : version(version) {}
-  WalletTransferDto(const CryptoNote::WalletTransfer& tr, uint32_t version) : WalletTransferDto(version) {
+  WalletTransferDto(const Fortress::WalletTransfer& tr, uint32_t version) : WalletTransferDto(version) {
     address = tr.address;
     amount = tr.amount;
     type = static_cast<uint8_t>(tr.type);
@@ -101,7 +101,7 @@ struct WalletTransferDto {
   uint32_t version;
 };
 
-void serialize(WalletRecordDto& value, CryptoNote::ISerializer& serializer) {
+void serialize(WalletRecordDto& value, Fortress::ISerializer& serializer) {
   serializer(value.spendPublicKey, "spend_public_key");
   serializer(value.spendSecretKey, "spend_secret_key");
   serializer(value.pendingBalance, "pending_balance");
@@ -109,7 +109,7 @@ void serialize(WalletRecordDto& value, CryptoNote::ISerializer& serializer) {
   serializer(value.creationTimestamp, "creation_timestamp");
 }
 
-void serialize(ObsoleteSpentOutputDto& value, CryptoNote::ISerializer& serializer) {
+void serialize(ObsoleteSpentOutputDto& value, Fortress::ISerializer& serializer) {
   serializer(value.amount, "amount");
   serializer(value.transactionHash, "transaction_hash");
   serializer(value.outputInTransaction, "output_in_transaction");
@@ -117,26 +117,26 @@ void serialize(ObsoleteSpentOutputDto& value, CryptoNote::ISerializer& serialize
   serializer(value.spendingTransactionHash, "spending_transaction_hash");
 }
 
-void serialize(ObsoleteChangeDto& value, CryptoNote::ISerializer& serializer) {
+void serialize(ObsoleteChangeDto& value, Fortress::ISerializer& serializer) {
   serializer(value.txHash, "transaction_hash");
   serializer(value.amount, "amount");
 }
 
-void serialize(UnlockTransactionJobDto& value, CryptoNote::ISerializer& serializer) {
+void serialize(UnlockTransactionJobDto& value, Fortress::ISerializer& serializer) {
   serializer(value.blockHeight, "block_height");
   serializer(value.transactionHash, "transaction_hash");
   serializer(value.walletIndex, "wallet_index");
 }
 
-void serialize(WalletTransactionDto& value, CryptoNote::ISerializer& serializer) {
-  typedef std::underlying_type<CryptoNote::WalletTransactionState>::type StateType;
+void serialize(WalletTransactionDto& value, Fortress::ISerializer& serializer) {
+  typedef std::underlying_type<Fortress::WalletTransactionState>::type StateType;
 
   StateType state = static_cast<StateType>(value.state);
   serializer(state, "state");
-  value.state = static_cast<CryptoNote::WalletTransactionState>(state);
+  value.state = static_cast<Fortress::WalletTransactionState>(state);
 
   serializer(value.timestamp, "timestamp");
-  CryptoNote::serializeBlockHeight(serializer, value.blockHeight, "block_height");
+  Fortress::serializeBlockHeight(serializer, value.blockHeight, "block_height");
   serializer(value.hash, "hash");
   serializer(value.totalAmount, "total_amount");
   serializer(value.fee, "fee");
@@ -145,7 +145,7 @@ void serialize(WalletTransactionDto& value, CryptoNote::ISerializer& serializer)
   serializer(value.extra, "extra");
 }
 
-void serialize(WalletTransferDto& value, CryptoNote::ISerializer& serializer) {
+void serialize(WalletTransferDto& value, Fortress::ISerializer& serializer) {
   serializer(value.address, "address");
   serializer(value.amount, "amount");
 
@@ -158,7 +158,7 @@ template <typename Object>
 std::string serialize(Object& obj, const std::string& name) {
   std::stringstream stream;
   StdOutputStream output(stream);
-  CryptoNote::BinaryOutputStreamSerializer s(output);
+  Fortress::BinaryOutputStreamSerializer s(output);
 
   s(obj, Common::StringView(name));
 
@@ -166,7 +166,7 @@ std::string serialize(Object& obj, const std::string& name) {
   return stream.str();
 }
 
-std::string encrypt(const std::string& plain, CryptoNote::CryptoContext& cryptoContext) {
+std::string encrypt(const std::string& plain, Fortress::CryptoContext& cryptoContext) {
   std::string cipher;
   cipher.resize(plain.size());
 
@@ -176,12 +176,12 @@ std::string encrypt(const std::string& plain, CryptoNote::CryptoContext& cryptoC
 }
 
 void addToStream(const std::string& cipher, const std::string& name, Common::IOutputStream& destination) {
-  CryptoNote::BinaryOutputStreamSerializer s(destination);
+  Fortress::BinaryOutputStreamSerializer s(destination);
   s(const_cast<std::string& >(cipher), name);
 }
 
 template<typename Object>
-void serializeEncrypted(Object& obj, const std::string& name, CryptoNote::CryptoContext& cryptoContext, Common::IOutputStream& destination) {
+void serializeEncrypted(Object& obj, const std::string& name, Fortress::CryptoContext& cryptoContext, Common::IOutputStream& destination) {
   std::string plain = serialize(obj, name);
   std::string cipher = encrypt(plain, cryptoContext);
 
@@ -190,13 +190,13 @@ void serializeEncrypted(Object& obj, const std::string& name, CryptoNote::Crypto
 
 std::string readCipher(Common::IInputStream& source, const std::string& name) {
   std::string cipher;
-  CryptoNote::BinaryInputStreamSerializer s(source);
+  Fortress::BinaryInputStreamSerializer s(source);
   s(cipher, name);
 
   return cipher;
 }
 
-std::string decrypt(const std::string& cipher, CryptoNote::CryptoContext& cryptoContext) {
+std::string decrypt(const std::string& cipher, Fortress::CryptoContext& cryptoContext) {
   std::string plain;
   plain.resize(cipher.size());
 
@@ -207,12 +207,12 @@ std::string decrypt(const std::string& cipher, CryptoNote::CryptoContext& crypto
 template<typename Object>
 void deserialize(Object& obj, const std::string& name, const std::string& plain) {
   MemoryInputStream stream(plain.data(), plain.size());
-  CryptoNote::BinaryInputStreamSerializer s(stream);
+  Fortress::BinaryInputStreamSerializer s(stream);
   s(obj, Common::StringView(name));
 }
 
 template<typename Object>
-void deserializeEncrypted(Object& obj, const std::string& name, CryptoNote::CryptoContext& cryptoContext, Common::IInputStream& source) {
+void deserializeEncrypted(Object& obj, const std::string& name, Fortress::CryptoContext& cryptoContext, Common::IInputStream& source) {
   std::string cipher = readCipher(source, name);
   std::string plain = decrypt(cipher, cryptoContext);
 
@@ -228,13 +228,13 @@ bool verifyKeys(const SecretKey& sec, const PublicKey& expected_pub) {
 
 void throwIfKeysMissmatch(const SecretKey& sec, const PublicKey& expected_pub) {
   if (!verifyKeys(sec, expected_pub))
-    throw std::system_error(make_error_code(CryptoNote::error::WRONG_PASSWORD));
+    throw std::system_error(make_error_code(Fortress::error::WRONG_PASSWORD));
 }
 
-CryptoNote::WalletTransaction convert(const CryptoNote::WalletLegacyTransaction& tx) {
-  CryptoNote::WalletTransaction mtx;
+Fortress::WalletTransaction convert(const Fortress::WalletLegacyTransaction& tx) {
+  Fortress::WalletTransaction mtx;
 
-  mtx.state = CryptoNote::WalletTransactionState::SUCCEEDED;
+  mtx.state = Fortress::WalletTransactionState::SUCCEEDED;
   mtx.timestamp = tx.timestamp;
   mtx.blockHeight = tx.blockHeight;
   mtx.hash = tx.hash;
@@ -248,8 +248,8 @@ CryptoNote::WalletTransaction convert(const CryptoNote::WalletLegacyTransaction&
   return mtx;
 }
 
-CryptoNote::WalletTransfer convert(const CryptoNote::WalletLegacyTransfer& tr) {
-  CryptoNote::WalletTransfer mtr;
+Fortress::WalletTransfer convert(const Fortress::WalletLegacyTransfer& tr) {
+  Fortress::WalletTransfer mtr;
 
   mtr.address = tr.address;
   mtr.amount = tr.amount;
@@ -259,7 +259,7 @@ CryptoNote::WalletTransfer convert(const CryptoNote::WalletLegacyTransfer& tr) {
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 const uint32_t WalletSerializer::SERIALIZATION_VERSION = 5;
 
@@ -299,7 +299,7 @@ WalletSerializer::WalletSerializer(
 void WalletSerializer::save(const std::string& password, Common::IOutputStream& destination, bool saveDetails, bool saveCache) {
   CryptoContext cryptoContext = generateCryptoContext(password);
 
-  CryptoNote::BinaryOutputStreamSerializer s(destination);
+  Fortress::BinaryOutputStreamSerializer s(destination);
   s.beginObject("wallet");
 
   saveVersion(destination);
@@ -473,7 +473,7 @@ void WalletSerializer::saveTransfers(Common::IOutputStream& destination, CryptoC
 }
 
 void WalletSerializer::load(const std::string& password, Common::IInputStream& source) {
-  CryptoNote::BinaryInputStreamSerializer s(source);
+  Fortress::BinaryInputStreamSerializer s(source);
   s.beginObject("wallet");
 
   uint32_t version = loadVersion(source);
@@ -490,7 +490,7 @@ void WalletSerializer::load(const std::string& password, Common::IInputStream& s
 }
 
 void WalletSerializer::loadWallet(Common::IInputStream& source, const std::string& password, uint32_t version) {
-  CryptoNote::CryptoContext cryptoContext;
+  Fortress::CryptoContext cryptoContext;
 
   bool details = false;
   bool cache = false;
@@ -546,9 +546,9 @@ void WalletSerializer::loadWallet(Common::IInputStream& source, const std::strin
 }
 
 void WalletSerializer::loadWalletV1(Common::IInputStream& source, const std::string& password) {
-  CryptoNote::CryptoContext cryptoContext;
+  Fortress::CryptoContext cryptoContext;
 
-  CryptoNote::BinaryInputStreamSerializer encrypted(source);
+  Fortress::BinaryInputStreamSerializer encrypted(source);
 
   encrypted(cryptoContext.iv, "iv");
   generateKey(password, cryptoContext.key);
@@ -559,7 +559,7 @@ void WalletSerializer::loadWalletV1(Common::IInputStream& source, const std::str
   std::string plain = decrypt(cipher, cryptoContext);
 
   MemoryInputStream decryptedStream(plain.data(), plain.size());
-  CryptoNote::BinaryInputStreamSerializer serializer(decryptedStream);
+  Fortress::BinaryInputStreamSerializer serializer(decryptedStream);
 
   loadWalletV1Keys(serializer);
   checkKeys();
@@ -574,8 +574,8 @@ void WalletSerializer::loadWalletV1(Common::IInputStream& source, const std::str
   }
 }
 
-void WalletSerializer::loadWalletV1Keys(CryptoNote::BinaryInputStreamSerializer& serializer) {
-  CryptoNote::KeysStorage keys;
+void WalletSerializer::loadWalletV1Keys(Fortress::BinaryInputStreamSerializer& serializer) {
+  Fortress::KeysStorage keys;
   keys.serialize(serializer, "keys");
 
   m_viewPublicKey = keys.viewPublicKey;
@@ -591,7 +591,7 @@ void WalletSerializer::loadWalletV1Keys(CryptoNote::BinaryInputStreamSerializer&
   m_walletsContainer.get<RandomAccessIndex>().push_back(wallet);
 }
 
-void WalletSerializer::loadWalletV1Details(CryptoNote::BinaryInputStreamSerializer& serializer) {
+void WalletSerializer::loadWalletV1Details(Fortress::BinaryInputStreamSerializer& serializer) {
   std::vector<WalletLegacyTransaction> txs;
   std::vector<WalletLegacyTransfer> trs;
 
@@ -602,7 +602,7 @@ void WalletSerializer::loadWalletV1Details(CryptoNote::BinaryInputStreamSerializ
 }
 
 uint32_t WalletSerializer::loadVersion(Common::IInputStream& source) {
-  CryptoNote::BinaryInputStreamSerializer s(source);
+  Fortress::BinaryInputStreamSerializer s(source);
 
   uint32_t version = std::numeric_limits<uint32_t>::max();
   s(version, "version");
@@ -611,7 +611,7 @@ uint32_t WalletSerializer::loadVersion(Common::IInputStream& source) {
 }
 
 void WalletSerializer::loadIv(Common::IInputStream& source, Crypto::chacha8_iv& iv) {
-  CryptoNote::BinaryInputStreamSerializer s(source);
+  Fortress::BinaryInputStreamSerializer s(source);
 
   s.binary(static_cast<void *>(&iv.data), sizeof(iv.data), "chacha_iv");
 }
@@ -687,7 +687,7 @@ void WalletSerializer::loadWallets(Common::IInputStream& source, CryptoContext& 
     wallet.actualBalance = dto.actualBalance;
     wallet.pendingBalance = dto.pendingBalance;
     wallet.creationTimestamp = static_cast<time_t>(dto.creationTimestamp);
-    wallet.container = reinterpret_cast<CryptoNote::ITransfersContainer*>(i); //dirty hack. container field must be unique
+    wallet.container = reinterpret_cast<Fortress::ITransfersContainer*>(i); //dirty hack. container field must be unique
 
     index.push_back(wallet);
   }
@@ -921,4 +921,4 @@ void WalletSerializer::addWalletV1Details(const std::vector<WalletLegacyTransact
   }
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

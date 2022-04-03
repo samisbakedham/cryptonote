@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,15 +8,15 @@
 #include "ITransaction.h"
 #include "crypto/crypto.h"
 
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
 
 #include "Transfers/TransfersContainer.h"
 
 namespace {
 
-  using namespace CryptoNote;
+  using namespace Fortress;
   using namespace Crypto;
 
   inline AccountKeys accountKeysFromKeypairs(
@@ -54,8 +54,8 @@ namespace {
 
   KeyImage generateKeyImage(const AccountKeys& keys, size_t idx, const PublicKey& txPubKey) {
     KeyImage keyImage;
-    CryptoNote::KeyPair in_ephemeral;
-    CryptoNote::generate_key_image_helper(
+    Fortress::KeyPair in_ephemeral;
+    Fortress::generate_key_image_helper(
      keys,
       txPubKey,
       idx,
@@ -101,7 +101,7 @@ namespace {
   }
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
 class TestTransactionBuilder {
 public:
@@ -196,7 +196,7 @@ private:
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 inline bool operator == (const AccountKeys& a, const AccountKeys& b) { 
   return memcmp(&a, &b, sizeof(a)) == 0; 
 }

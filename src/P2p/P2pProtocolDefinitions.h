@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,15 +7,15 @@
 #include "P2pProtocolTypes.h"
 
 #include "crypto/crypto.h"
-#include "CryptoNoteConfig.h"
-#include "CryptoNoteCore/CryptoNoteStatInfo.h"
+#include "FortressConfig.h"
+#include "FortressCore/FortressStatInfo.h"
 
 // new serialization
 #include "Serialization/ISerializer.h"
 #include "Serialization/SerializationOverloads.h"
-#include "CryptoNoteCore/CryptoNoteSerialization.h"
+#include "FortressCore/FortressSerialization.h"
 
-namespace CryptoNote
+namespace Fortress
 {
   inline bool serialize(uuid& v, Common::StringView name, ISerializer& s) {
     return s.binary(&v, sizeof(v), name);

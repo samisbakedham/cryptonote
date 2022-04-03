@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,8 +8,8 @@
 
 #include "CommonTypes.h"
 #include "Common/BlockingQueue.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/TransactionApi.h"
 
 #include "IWallet.h"
 #include "INode.h"
@@ -19,7 +19,7 @@ using namespace Crypto;
 
 namespace {
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 void checkOutputKey(
   const KeyDerivation& derivation,
@@ -79,7 +79,7 @@ void findMyOutputs(
   }
 }
 
-std::vector<Crypto::Hash> getBlockHashes(const CryptoNote::CompleteBlock* blocks, size_t count) {
+std::vector<Crypto::Hash> getBlockHashes(const Fortress::CompleteBlock* blocks, size_t count) {
   std::vector<Crypto::Hash> result;
   result.reserve(count);
 
@@ -92,9 +92,9 @@ std::vector<Crypto::Hash> getBlockHashes(const CryptoNote::CompleteBlock* blocks
 
 }
 
-namespace CryptoNote {
+namespace Fortress {
 
-TransfersConsumer::TransfersConsumer(const CryptoNote::Currency& currency, INode& node, const SecretKey& viewSecret) :
+TransfersConsumer::TransfersConsumer(const Fortress::Currency& currency, INode& node, const SecretKey& viewSecret) :
   m_node(node), m_viewSecret(viewSecret), m_currency(currency) {
   updateSyncStart();
 }
@@ -302,9 +302,9 @@ std::error_code TransfersConsumer::onPoolUpdated(const std::vector<std::unique_p
   unconfirmedBlockInfo.height = WALLET_UNCONFIRMED_TRANSACTION_HEIGHT;
 
   std::error_code processingError;
-  for (auto& cryptonoteTransaction : addedTransactions) {
-    m_poolTxs.emplace(cryptonoteTransaction->getTransactionHash());
-    processingError = processTransaction(unconfirmedBlockInfo, *cryptonoteTransaction.get());
+  for (auto& FortressTransaction : addedTransactions) {
+    m_poolTxs.emplace(FortressTransaction->getTransactionHash());
+    processingError = processTransaction(unconfirmedBlockInfo, *FortressTransaction.get());
     if (processingError) {
       for (auto& sub : m_subscriptions) {
         sub.second->onError(processingError, WALLET_UNCONFIRMED_TRANSACTION_HEIGHT);
@@ -386,8 +386,8 @@ std::error_code createTransfers(
       KeyOutput out;
       tx.getOutput(idx, out, amount);
 
-      CryptoNote::KeyPair in_ephemeral;
-      CryptoNote::generate_key_image_helper(
+      Fortress::KeyPair in_ephemeral;
+      Fortress::generate_key_image_helper(
         account,
         txPubKey,
         idx,

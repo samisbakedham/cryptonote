@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "INodeStubs.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/TransactionApi.h"
 #include "Wallet/WalletErrors.h"
 
 #include <functional>
@@ -20,7 +20,7 @@
 
 #include "BlockchainExplorer/BlockchainExplorerDataBuilder.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 using namespace Common;
 
 namespace {
@@ -665,14 +665,14 @@ void INodeTrivialRefreshStub::sendLocalBlockchainUpdated(){
   observerManager.notify(&INodeObserver::localBlockchainUpdated, getLastLocalBlockHeight());
 }
 
-void INodeTrivialRefreshStub::getMultisignatureOutputByGlobalIndex(uint64_t amount, uint32_t gindex, CryptoNote::MultisignatureOutput& out, const Callback& callback) {
+void INodeTrivialRefreshStub::getMultisignatureOutputByGlobalIndex(uint64_t amount, uint32_t gindex, Fortress::MultisignatureOutput& out, const Callback& callback) {
   m_asyncCounter.addAsyncContext();
   std::unique_lock<std::mutex> lock(m_walletLock);
   std::thread task(&INodeTrivialRefreshStub::doGetOutByMSigGIndex, this, amount, gindex, std::ref(out), callback);
   task.detach();
 }
 
-void INodeTrivialRefreshStub::doGetOutByMSigGIndex(uint64_t amount, uint32_t gindex, CryptoNote::MultisignatureOutput& out, const Callback& callback) {
+void INodeTrivialRefreshStub::doGetOutByMSigGIndex(uint64_t amount, uint32_t gindex, Fortress::MultisignatureOutput& out, const Callback& callback) {
   ContextCounterHolder counterHolder(m_asyncCounter);
   std::unique_lock<std::mutex> lock(m_walletLock);
 

@@ -1,23 +1,23 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/FortressBasicImpl.h"
+#include "FortressCore/Account.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/FortressTools.h"
+#include "FortressCore/Currency.h"
 
 #include <Common/Math.h>
 
 #include "Chaingen.h"
 
-using namespace CryptoNote;
+using namespace Fortress;
 
 bool test_transaction_generation_and_ring_signature()
 {
   Logging::ConsoleLogger logger;
-  CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logger).currency();
+  Fortress::Currency currency = Fortress::CurrencyBuilder(logger).currency();
 
   AccountBase miner_acc1;
   miner_acc1.generate();
@@ -83,7 +83,7 @@ bool test_transaction_generation_and_ring_signature()
     oe.second = boost::get<KeyOutput>(tx_mine_6.outputs[0].target).key;
     src.outputs.push_back(oe);
 
-    src.realTransactionPublicKey = CryptoNote::getTransactionPublicKeyFromExtra(tx_mine_2.extra);
+    src.realTransactionPublicKey = Fortress::getTransactionPublicKeyFromExtra(tx_mine_2.extra);
     src.realOutput = 1;
     src.realOutputIndexInTransaction = 0;
   }
@@ -129,7 +129,7 @@ bool test_block_creation()
 
   uint64_t vszs[] = {80,476,476,475,475,474,475,474,474,475,472,476,476,475,475,474,475,474,474,475,472,476,476,475,475,474,475,474,474,475,9391,476,476,475,475,474,475,8819,8301,475,472,4302,5316,14347,16620,19583,19403,19728,19442,19852,19015,19000,19016,19795,19749,18087,19787,19704,19750,19267,19006,19050,19445,19407,19522,19546,19788,19369,19486,19329,19370,18853,19600,19110,19320,19746,19474,19474,19743,19494,19755,19715,19769,19620,19368,19839,19532,23424,28287,30707};
   std::vector<uint64_t> szs(&vszs[0], &vszs[90]);
-  CryptoNote::Currency currency = CryptoNote::CurrencyBuilder(logger).currency();
+  Fortress::Currency currency = Fortress::CurrencyBuilder(logger).currency();
 
   AccountPublicAddress adr;
   bool r = currency.parseAccountAddressString("272xWzbWsP4cfNFfxY5ETN5moU8x81PKfWPwynrrqsNGDBQGLmD1kCkKCvPeDUXu5XfmZkCrQ53wsWmdfvHBGLNjGcRiDcK", adr);

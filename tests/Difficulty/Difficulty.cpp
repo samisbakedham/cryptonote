@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,9 +9,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "CryptoNoteConfig.h"
-#include "CryptoNoteCore/Difficulty.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressConfig.h"
+#include "FortressCore/Difficulty.h"
+#include "FortressCore/Currency.h"
 #include "Logging/ConsoleLogger.h"
 
 using namespace std;
@@ -22,12 +22,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     Logging::ConsoleLogger logger;
-    CryptoNote::CurrencyBuilder currencyBuilder(logger);
+    Fortress::CurrencyBuilder currencyBuilder(logger);
     currencyBuilder.difficultyTarget(120);
     currencyBuilder.difficultyWindow(720);
     currencyBuilder.difficultyCut(60);
     currencyBuilder.difficultyLag(15);
-    CryptoNote::Currency currency = currencyBuilder.currency();
+    Fortress::Currency currency = currencyBuilder.currency();
     vector<uint64_t> timestamps, cumulative_difficulties;
     fstream data(argv[1], fstream::in);
     data.exceptions(fstream::badbit);

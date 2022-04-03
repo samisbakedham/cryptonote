@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,13 +14,13 @@
 
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace Fortress {
 
 WalletUserTransactionsCache::WalletUserTransactionsCache(uint64_t mempoolTxLiveTime) : m_unconfirmedTransactions(mempoolTxLiveTime) {
 }
 
-bool WalletUserTransactionsCache::serialize(CryptoNote::ISerializer& s) {
-  if (s.type() == CryptoNote::ISerializer::INPUT) {
+bool WalletUserTransactionsCache::serialize(Fortress::ISerializer& s) {
+  if (s.type() == Fortress::ISerializer::INPUT) {
     s(m_transactions, "transactions");
     s(m_transfers, "transfers");
     s(m_unconfirmedTransactions, "unconfirmed");
@@ -77,7 +77,7 @@ TransactionId WalletUserTransactionsCache::addNewTransaction(
 }
 
 void WalletUserTransactionsCache::updateTransaction(
-  TransactionId transactionId, const CryptoNote::Transaction& tx, uint64_t amount, const std::list<TransactionOutputInformation>& usedOutputs) {
+  TransactionId transactionId, const Fortress::Transaction& tx, uint64_t amount, const std::list<TransactionOutputInformation>& usedOutputs) {
   // update extra field from created transaction
   auto& txInfo = m_transactions.at(transactionId);
   txInfo.extra.assign(tx.extra.begin(), tx.extra.end());
@@ -98,7 +98,7 @@ void WalletUserTransactionsCache::updateTransactionSendingState(TransactionId tr
 std::shared_ptr<WalletLegacyEvent> WalletUserTransactionsCache::onTransactionUpdated(const TransactionInformation& txInfo, int64_t txBalance) {
   std::shared_ptr<WalletLegacyEvent> event;
 
-  TransactionId id = CryptoNote::WALLET_LEGACY_INVALID_TRANSACTION_ID;
+  TransactionId id = Fortress::WALLET_LEGACY_INVALID_TRANSACTION_ID;
 
   if (!m_unconfirmedTransactions.findTransactionId(txInfo.transactionHash, id)) {
     id = findTransactionByHash(txInfo.transactionHash);
@@ -108,7 +108,7 @@ std::shared_ptr<WalletLegacyEvent> WalletUserTransactionsCache::onTransactionUpd
 
   bool isCoinbase = txInfo.totalAmountIn == 0;
 
-  if (id == CryptoNote::WALLET_LEGACY_INVALID_TRANSACTION_ID) {
+  if (id == Fortress::WALLET_LEGACY_INVALID_TRANSACTION_ID) {
     WalletLegacyTransaction transaction;
     transaction.firstTransferId = WALLET_LEGACY_INVALID_TRANSFER_ID;
     transaction.transferCount = 0;
@@ -139,7 +139,7 @@ std::shared_ptr<WalletLegacyEvent> WalletUserTransactionsCache::onTransactionUpd
 }
 
 std::shared_ptr<WalletLegacyEvent> WalletUserTransactionsCache::onTransactionDeleted(const Hash& transactionHash) {
-  TransactionId id = CryptoNote::WALLET_LEGACY_INVALID_TRANSACTION_ID;
+  TransactionId id = Fortress::WALLET_LEGACY_INVALID_TRANSACTION_ID;
   if (m_unconfirmedTransactions.findTransactionId(transactionHash, id)) {
     m_unconfirmedTransactions.erase(transactionHash);
     // LOG_ERROR("Unconfirmed transaction is deleted: id = " << id << ", hash = " << transactionHash);
@@ -149,7 +149,7 @@ std::shared_ptr<WalletLegacyEvent> WalletUserTransactionsCache::onTransactionDel
   }
 
   std::shared_ptr<WalletLegacyEvent> event;
-  if (id != CryptoNote::WALLET_LEGACY_INVALID_TRANSACTION_ID) {
+  if (id != Fortress::WALLET_LEGACY_INVALID_TRANSACTION_ID) {
     WalletLegacyTransaction& tr = getTransaction(id);
     tr.blockHeight = WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT;
     tr.timestamp = 0;
@@ -212,7 +212,7 @@ TransactionId WalletUserTransactionsCache::findTransactionByHash(const Hash& has
   auto it = std::find_if(m_transactions.begin(), m_transactions.end(), [&hash](const WalletLegacyTransaction& tx) { return tx.hash == hash; });
 
   if (it == m_transactions.end())
-    return CryptoNote::WALLET_LEGACY_INVALID_TRANSACTION_ID;
+    return Fortress::WALLET_LEGACY_INVALID_TRANSACTION_ID;
 
   return std::distance(m_transactions.begin(), it);
 }
@@ -302,4 +302,4 @@ std::vector<TransactionId> WalletUserTransactionsCache::deleteOutdatedTransactio
   return deletedTransactions;
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -25,11 +25,11 @@ void throwNotDefined() {
 class ContextCounterHolder
 {
 public:
-  ContextCounterHolder(CryptoNote::WalletAsyncContextCounter& shutdowner) : m_shutdowner(shutdowner) {}
+  ContextCounterHolder(Fortress::WalletAsyncContextCounter& shutdowner) : m_shutdowner(shutdowner) {}
   ~ContextCounterHolder() { m_shutdowner.delAsyncContext(); }
 
 private:
-  CryptoNote::WalletAsyncContextCounter& m_shutdowner;
+  Fortress::WalletAsyncContextCounter& m_shutdowner;
 };
 
 template <typename F>
@@ -38,7 +38,7 @@ void runAtomic(std::mutex& mutex, F f) {
   f();
 }
 
-class InitWaiter : public CryptoNote::IWalletLegacyObserver {
+class InitWaiter : public Fortress::IWalletLegacyObserver {
 public:
   InitWaiter() : future(promise.get_future()) {}
 
@@ -55,7 +55,7 @@ private:
 };
 
 
-class SaveWaiter : public CryptoNote::IWalletLegacyObserver {
+class SaveWaiter : public Fortress::IWalletLegacyObserver {
 public:
   SaveWaiter() : future(promise.get_future()) {}
 
@@ -74,9 +74,9 @@ private:
 
 } //namespace
 
-namespace CryptoNote {
+namespace Fortress {
 
-class SyncStarter : public CryptoNote::IWalletLegacyObserver {
+class SyncStarter : public Fortress::IWalletLegacyObserver {
 public:
   SyncStarter(BlockchainSynchronizer& sync) : m_sync(sync) {}
   virtual ~SyncStarter() {}
@@ -90,7 +90,7 @@ public:
   BlockchainSynchronizer& m_sync;
 };
 
-WalletLegacy::WalletLegacy(const CryptoNote::Currency& currency, INode& node) :
+WalletLegacy::WalletLegacy(const Fortress::Currency& currency, INode& node) :
   m_state(NOT_INITIALIZED),
   m_currency(currency),
   m_node(node),
@@ -224,7 +224,7 @@ void WalletLegacy::doLoad(std::istream& source) {
     return;
   } catch (std::exception&) {
     runAtomic(m_cacheMutex, [this] () {this->m_state = WalletLegacy::NOT_INITIALIZED;} );
-    m_observerManager.notify(&IWalletLegacyObserver::initCompleted, make_error_code(CryptoNote::error::INTERNAL_WALLET_ERROR));
+    m_observerManager.notify(&IWalletLegacyObserver::initCompleted, make_error_code(Fortress::error::INTERNAL_WALLET_ERROR));
     return;
   }
 
@@ -295,14 +295,14 @@ void WalletLegacy::reset() {
 
 void WalletLegacy::save(std::ostream& destination, bool saveDetailed, bool saveCache) {
   if(m_isStopping) {
-    m_observerManager.notify(&IWalletLegacyObserver::saveCompleted, make_error_code(CryptoNote::error::OPERATION_CANCELLED));
+    m_observerManager.notify(&IWalletLegacyObserver::saveCompleted, make_error_code(Fortress::error::OPERATION_CANCELLED));
     return;
   }
 
   {
     std::unique_lock<std::mutex> lock(m_cacheMutex);
 
-    throwIf(m_state != INITIALIZED, CryptoNote::error::WRONG_STATE);
+    throwIf(m_state != INITIALIZED, Fortress::error::WRONG_STATE);
 
     m_state = SAVING;
   }
@@ -340,7 +340,7 @@ void WalletLegacy::doSave(std::ostream& destination, bool saveDetailed, bool sav
   }
   catch (std::exception&) {
     runAtomic(m_cacheMutex, [this] () {this->m_state = WalletLegacy::INITIALIZED;} );
-    m_observerManager.notify(&IWalletLegacyObserver::saveCompleted, make_error_code(CryptoNote::error::INTERNAL_WALLET_ERROR));
+    m_observerManager.notify(&IWalletLegacyObserver::saveCompleted, make_error_code(Fortress::error::INTERNAL_WALLET_ERROR));
     return;
   }
 
@@ -353,7 +353,7 @@ std::error_code WalletLegacy::changePassword(const std::string& oldPassword, con
   throwIfNotInitialised();
 
   if (m_password.compare(oldPassword))
-    return make_error_code(CryptoNote::error::WRONG_PASSWORD);
+    return make_error_code(Fortress::error::WRONG_PASSWORD);
 
   //we don't let the user to change the password while saving
   m_password = newPassword;
@@ -485,7 +485,7 @@ void WalletLegacy::synchronizationCallback(WalletRequest::Callback callback, std
 }
 
 std::error_code WalletLegacy::cancelTransaction(size_t transactionId) {
-  return make_error_code(CryptoNote::error::TX_CANCEL_IMPOSSIBLE);
+  return make_error_code(Fortress::error::TX_CANCEL_IMPOSSIBLE);
 }
 
 void WalletLegacy::synchronizationProgressUpdated(uint32_t current, uint32_t total) {
@@ -550,7 +550,7 @@ void WalletLegacy::onTransactionDeleted(ITransfersSubscription* object, const Ha
 
 void WalletLegacy::throwIfNotInitialised() {
   if (m_state == NOT_INITIALIZED || m_state == LOADING) {
-    throw std::system_error(make_error_code(CryptoNote::error::NOT_INITIALIZED));
+    throw std::system_error(make_error_code(Fortress::error::NOT_INITIALIZED));
   }
   assert(m_transferDetails);
 }
@@ -582,7 +582,7 @@ void WalletLegacy::notifyIfBalanceChanged() {
 
 void WalletLegacy::getAccountKeys(AccountKeys& keys) {
   if (m_state == NOT_INITIALIZED) {
-    throw std::system_error(make_error_code(CryptoNote::error::NOT_INITIALIZED));
+    throw std::system_error(make_error_code(Fortress::error::NOT_INITIALIZED));
   }
 
   keys = m_account.getAccountKeys();
@@ -593,4 +593,4 @@ std::vector<TransactionId> WalletLegacy::deleteOutdatedUnconfirmedTransactions()
   return m_transactionsCache.deleteOutdatedTransactions();
 }
 
-} //namespace CryptoNote
+} //namespace Fortress

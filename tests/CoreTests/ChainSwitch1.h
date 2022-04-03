@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,16 +15,16 @@ public:
 
   bool generate(std::vector<test_event_entry>& events) const;
 
-  bool check_split_not_switched(CryptoNote::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_split_switched(CryptoNote::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_split_not_switched(Fortress::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_split_switched(Fortress::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
 private:
-  std::list<CryptoNote::Block> m_chain_1;
+  std::list<Fortress::Block> m_chain_1;
 
-  CryptoNote::AccountBase m_recipient_account_1;
-  CryptoNote::AccountBase m_recipient_account_2;
-  CryptoNote::AccountBase m_recipient_account_3;
-  CryptoNote::AccountBase m_recipient_account_4;
+  Fortress::AccountBase m_recipient_account_1;
+  Fortress::AccountBase m_recipient_account_2;
+  Fortress::AccountBase m_recipient_account_3;
+  Fortress::AccountBase m_recipient_account_4;
 
-  std::vector<CryptoNote::Transaction> m_tx_pool;
+  std::vector<Fortress::Transaction> m_tx_pool;
 };

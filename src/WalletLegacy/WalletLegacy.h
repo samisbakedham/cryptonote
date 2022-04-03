@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The Fortress developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,9 +15,9 @@
 #include "Wallet/WalletErrors.h"
 #include "Wallet/WalletAsyncContextCounter.h"
 #include "Common/ObserverManager.h"
-#include "CryptoNoteCore/TransactionExtra.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/Currency.h"
+#include "FortressCore/TransactionExtra.h"
+#include "FortressCore/FortressFormatUtils.h"
+#include "FortressCore/Currency.h"
 #include "WalletLegacy/WalletUserTransactionsCache.h"
 #include "WalletLegacy/WalletUnconfirmedTransactions.h"
 
@@ -27,7 +27,7 @@
 #include "Transfers/BlockchainSynchronizer.h"
 #include "Transfers/TransfersSynchronizer.h"
 
-namespace CryptoNote {
+namespace Fortress {
 
 class SyncStarter;
 
@@ -37,7 +37,7 @@ class WalletLegacy :
   ITransfersObserver {
 
 public:
-  WalletLegacy(const CryptoNote::Currency& currency, INode& node);
+  WalletLegacy(const Fortress::Currency& currency, INode& node);
   virtual ~WalletLegacy();
 
   virtual void addObserver(IWalletLegacyObserver* observer) override;
@@ -105,9 +105,9 @@ private:
 
   WalletState m_state;
   std::mutex m_cacheMutex;
-  CryptoNote::AccountBase m_account;
+  Fortress::AccountBase m_account;
   std::string m_password;
-  const CryptoNote::Currency& m_currency;
+  const Fortress::Currency& m_currency;
   INode& m_node;
   bool m_isStopping;
 
@@ -122,9 +122,9 @@ private:
   std::unique_ptr<WalletTransactionSender> m_sender;
 
   WalletAsyncContextCounter m_asyncContextCounter;
-  Tools::ObserverManager<CryptoNote::IWalletLegacyObserver> m_observerManager;
+  Tools::ObserverManager<Fortress::IWalletLegacyObserver> m_observerManager;
 
   std::unique_ptr<SyncStarter> m_onInitSyncStarter;
 };
 
-} //namespace CryptoNote
+} //namespace Fortress
